@@ -13,17 +13,18 @@
 3. [Stack tecnológico](#3-stack-tecnológico)
 4. [Estructura de archivos a crear](#4-estructura-de-archivos-a-crear)
 5. [Paso 1 — docker-compose.yml](#5-paso-1--docker-composeyml)
-6. [Paso 2 — Dockerfile de Node-RED](#6-paso-2--dockerfile-de-node-red)
-7. [Paso 3 — settings.js de Node-RED](#7-paso-3--settingsjs-de-node-red)
-8. [Paso 4 — flows.json (flujo completo Node-RED)](#8-paso-4--flowsjson-flujo-completo-node-red)
-9. [Paso 5 — Levantar todos los servicios](#9-paso-5--levantar-todos-los-servicios)
-10. [Paso 6 — Verificar InfluxDB](#10-paso-6--verificar-influxdb)
-11. [Paso 7 — Verificar Node-RED](#11-paso-7--verificar-node-red)
-12. [Paso 8 — Verificar datos almacenados](#12-paso-8--verificar-datos-almacenados)
-13. [Queries Flux de referencia](#13-queries-flux-de-referencia)
-14. [Troubleshooting](#14-troubleshooting)
-15. [Entregables para el profesor](#15-entregables-para-el-profesor)
-16. [Conexión con Fase 4](#16-conexión-con-fase-4)
+6. [Paso 2 — mosquitto.conf](#6-paso-2--mosquittoconf)
+7. [Paso 3 — gateway/requirements.txt](#7-paso-3--gatewayrequirementstxt)
+8. [Paso 4 — gateway/Dockerfile](#8-paso-4--gatewaydockerfile)
+9. [Paso 5 — gateway/gateway.py](#9-paso-5--gatewaygatewaypy)
+10. [Paso 6 — Levantar todos los servicios](#10-paso-6--levantar-todos-los-servicios)
+11. [Paso 7 — Verificar InfluxDB](#11-paso-7--verificar-influxdb)
+12. [Paso 8 — Verificar el gateway Python](#12-paso-8--verificar-el-gateway-python)
+13. [Paso 9 — Verificar datos almacenados](#13-paso-9--verificar-datos-almacenados)
+14. [Queries Flux de referencia](#14-queries-flux-de-referencia)
+15. [Troubleshooting](#15-troubleshooting)
+16. [Entregables para el profesor](#16-entregables-para-el-profesor)
+17. [Conexión con Fase 4](#17-conexión-con-fase-4)
 
 ---
 
@@ -36,13 +37,17 @@ La carpeta `fase_2/` contiene un simulador funcional con los siguientes servicio
 | Servicio | Imagen | Puerto | Estado |
 |---|---|---|---|
 | `mqtt_broker` | `eclipse-mosquitto:latest` | `1883` | ✅ Operativo |
-| `iot_simulator` | imagen local | — | ✅ Operativo |
+| `iot_simulator` | imagen local (Python) | — | ✅ Operativo |
 
 El simulador publica mensajes JSON cada 15/30/60 segundos en los siguientes topics MQTT:
 - `agricultura/sensores/parcela_1` — Caña de azúcar, 5 ha
 - `agricultura/sensores/parcela_2` — Caña de azúcar, 3.5 ha
 - `agricultura/sensores/parcela_3` — Palma de aceite, 8 ha
 - `agricultura/sensores/parcela_4` — Palma de aceite, 6.5 ha
+
+**Fuentes de datos del simulador:**
+- Parcelas 1 y 2 (caña): `sugarcane-prediction-dataset.csv` — datos reales de campo
+- Parcelas 3 y 4 (palma): `crop-production-countries.csv` (temperatura + lluvia reales) + proceso AR(1) para el resto
 
 **Payload de ejemplo que llega al broker:**
 ```json
@@ -60,21 +65,24 @@ El simulador publica mensajes JSON cada 15/30/60 segundos en los siguientes topi
 }
 ```
 
+> **Importante:** no todos los campos de sensor aparecen en cada mensaje.
+> La frecuencia por sensor es 15 s / 30 s / 60 s, y el payload solo incluye
+> los sensores que dispararon en ese tick. El gateway debe manejar payloads parciales.
+
 ### Qué falta construir (Fase 3)
 
 ```
-[YA EXISTE]                [FASE 3 — CONSTRUIR]
-Sensores IoT (Python)
-       │
-       ▼
-Broker MQTT (Mosquitto) ──► Gateway IoT (Node-RED) ──► Raw Database (InfluxDB)
-                                     │
-                              - Recibe mensajes MQTT
-                              - Parsea JSON
-                              - Valida campos
-                              - Transforma a formato
-                                InfluxDB line protocol
-                              - Escribe en bucket
+[YA EXISTE]                         [FASE 3 — CONSTRUIR]
+Sensores IoT (Python simulator)
+        │
+        ▼
+Broker MQTT (Mosquitto) ──────────► Gateway IoT (Python) ──────────► InfluxDB
+                                           │
+                                    suscribe a MQTT
+                                    parsea JSON
+                                    valida campos
+                                    construye Point
+                                    escribe en bucket
 ```
 
 ---
@@ -84,22 +92,26 @@ Broker MQTT (Mosquitto) ──► Gateway IoT (Node-RED) ──► Raw Database 
 ### Flujo completo de datos
 
 ```
-simulator.py
-    │ publica JSON cada 15-60 s
+simulator.py (fase_2)
+    │ publica JSON cada 15-60 s por parcela
     ▼
-eclipse-mosquitto:1883
+eclipse-mosquitto :1883
     │ topic: agricultura/sensores/#
     ▼
-Node-RED :1880
-    │ nodo mqtt in → json → function → influxdb out
+gateway.py (Python — paho-mqtt + influxdb-client)
+    │ on_message():
+    │   1. json.loads(payload)
+    │   2. validar campos obligatorios
+    │   3. construir influxdb_client.Point
+    │   4. write_api.write(bucket, record=point)
     ▼
 InfluxDB :8086
     │ org: agricultura | bucket: agro_iot_data
+    │ measurement: sensor_data
     ▼
-Data Explorer (UI web InfluxDB)
-    │ Flux queries para verificación
+Data Explorer (UI web InfluxDB) — Flux queries
     ▼
-[Fase 4] Procesamiento y alertas
+[Fase 4] Procesamiento, alertas y analítica
 ```
 
 ### Modelo de datos en InfluxDB
@@ -108,10 +120,10 @@ InfluxDB v2 usa el concepto de **measurement + tags + fields + timestamp**:
 
 | Componente | Valor | Descripción |
 |---|---|---|
-| **measurement** | `sensor_data` | Nombre de la "tabla" en InfluxDB |
-| **tag: parcela** | `parcela_1` … `parcela_4` | Indexed — para filtrar por parcela |
-| **tag: cultivo** | `sugarcane` / `oil_palm` | Indexed — para filtrar por cultivo |
-| **tag: area_ha** | `"5.0"` | Indexed — área de la parcela |
+| **measurement** | `sensor_data` | Nombre de la "tabla" |
+| **tag: parcela** | `parcela_1` … `parcela_4` | Indexado — para filtrar por parcela |
+| **tag: cultivo** | `sugarcane` / `oil_palm` | Indexado — para filtrar por cultivo |
+| **tag: area_ha** | `"5.0"` | Indexado — área de la parcela |
 | **field: temperature_air** | `28.47` | Float — valor del sensor |
 | **field: humidity** | `70.83` | Float |
 | **field: rainfall** | `1462.5` | Float |
@@ -120,11 +132,11 @@ InfluxDB v2 usa el concepto de **measurement + tags + fields + timestamp**:
 | **field: solar_radiation** | `22.34` | Float |
 | **field: wind_speed** | `8.61` | Float |
 | **field: evapotranspiration** | `5.01` | Float |
-| **timestamp** | nanoseconds epoch | Generado por Node-RED desde `payload.timestamp` |
+| **timestamp** | nanoseconds epoch | Convertido desde `payload.timestamp` |
 
-> **Distinción clave:** Los `tags` son strings indexados (usados en filtros WHERE).
-> Los `fields` son valores numéricos almacenados como series temporales.
-> No invertir esta distinción — si se convierte un field en tag se degrada el rendimiento.
+> **Regla crítica de InfluxDB:** los `tags` son strings indexados (usados en
+> filtros WHERE). Los `fields` son valores numéricos almacenados como serie temporal.
+> Nunca poner un valor numérico de sensor como tag — degradaría el rendimiento.
 
 ---
 
@@ -133,15 +145,14 @@ InfluxDB v2 usa el concepto de **measurement + tags + fields + timestamp**:
 | Tecnología | Versión | Rol | Puerto |
 |---|---|---|---|
 | Eclipse Mosquitto | `latest` | Broker MQTT | `1883` |
-| Node-RED | `latest` + plugin | Gateway IoT (Edge Computing) | `1880` |
-| `node-red-contrib-influxdb` | `npm latest` | Plugin para escribir en InfluxDB v2 | — |
+| Python 3.11 + paho-mqtt | `paho-mqtt==1.6.1` | Suscripción a topics MQTT en el gateway | — |
+| Python 3.11 + influxdb-client | `influxdb-client==1.40.0` | Escritura en InfluxDB v2 desde el gateway | — |
 | InfluxDB | `2.7` | Base de datos de series temporales (raw data) | `8086` |
-| Python simulator | imagen local (Fase 2) | Fuente de datos | — |
+| Python simulator | imagen local (Fase 2) | Fuente de datos IoT simulados | — |
 
 ### Credenciales fijas para el lab
 
-> Estas credenciales son fijas y hardcodeadas para el entorno de laboratorio.
-> **No usar en producción.**
+> Hardcodeadas para el entorno de laboratorio. **No usar en producción.**
 
 | Parámetro | Valor |
 |---|---|
@@ -150,7 +161,6 @@ InfluxDB v2 usa el concepto de **measurement + tags + fields + timestamp**:
 | InfluxDB usuario admin | `admin` |
 | InfluxDB contraseña admin | `agro_admin_2026` |
 | InfluxDB API token | `agro-iot-token-fase3-icesi-2026` |
-| Node-RED URL | `http://localhost:1880` |
 | InfluxDB URL | `http://localhost:8086` |
 
 ---
@@ -161,39 +171,34 @@ El agente debe crear exactamente esta estructura dentro de `fase_3/`:
 
 ```
 proyecto_final/
-├── fase_2/                         ← ya existe, NO modificar
-│   ├── docker-compose.yml
-│   ├── simulator.py
-│   └── ...
-└── fase_3/                         ← crear todo aquí
-    ├── plan_implementacion.md      ← este archivo
-    ├── docker-compose.yml          ← TODOS los servicios (mosquitto+simulator+nodered+influxdb)
+├── datasets/                        ← ya existe
+├── fase_2/                          ← ya existe, NO modificar
+└── fase_3/
+    ├── plan_implementacion.md       ← este archivo
+    ├── docker-compose.yml           ← 4 servicios: mosquitto + simulator + gateway + influxdb
     ├── mosquitto/
-    │   └── mosquitto.conf          ← igual al de fase_2
-    ├── nodered/
-    │   ├── Dockerfile              ← node-red + plugin influxdb
-    │   ├── flows.json              ← flujo pre-configurado (importar directamente)
-    │   └── settings.js             ← deshabilitar cifrado de credenciales
-    └── influxdb/
-        └── (directorio vacío — Docker lo gestiona con volumen)
+    │   └── mosquitto.conf           ← idéntico al de fase_2
+    └── gateway/
+        ├── Dockerfile               ← python:3.11-slim + dependencias
+        ├── requirements.txt         ← paho-mqtt + influxdb-client
+        └── gateway.py               ← Gateway IoT: suscribe MQTT → escribe InfluxDB
 ```
 
-> **Nota para el agente:** `fase_3/` debe ser **autocontenida**. Al ejecutar
-> `docker compose up --build` desde dentro de `fase_3/`, todo el sistema debe
-> funcionar sin depender de que `fase_2/` esté corriendo.
+> `fase_3/` debe ser completamente autocontenida.
+> `docker compose up --build` desde dentro de `fase_3/` levanta todo el sistema.
 
 ---
 
 ## 5. Paso 1 — docker-compose.yml
 
-Crear el archivo `fase_3/docker-compose.yml` con el siguiente contenido **exacto**:
+Crear `fase_3/docker-compose.yml` con el siguiente contenido exacto:
 
 ```yaml
 version: "3.8"
 
 # ─────────────────────────────────────────────────────────────────────────────
-# Fase 3 — Ingestión IoT en InfluxDB via Node-RED
-# Servicios: Mosquitto + Simulador + Node-RED + InfluxDB
+# Fase 3 — Ingestión IoT en InfluxDB via Gateway Python
+# Servicios: Mosquitto + Simulador + Gateway Python + InfluxDB
 # ─────────────────────────────────────────────────────────────────────────────
 
 services:
@@ -257,29 +262,25 @@ services:
       timeout: 5s
       retries: 10
 
-  # ── 4. Gateway IoT — Node-RED ───────────────────────────────────────────────
-  nodered:
+  # ── 4. Gateway IoT — Python ─────────────────────────────────────────────────
+  gateway:
     build:
-      context: ./nodered
+      context: ./gateway
       dockerfile: Dockerfile
-    container_name: nodered_gateway
-    ports:
-      - "1880:1880"
+    container_name: iot_gateway
     depends_on:
       mosquitto:
         condition: service_healthy
       influxdb:
         condition: service_healthy
     environment:
-      - TZ=America/Bogota
+      - MQTT_BROKER=mosquitto
+      - MQTT_PORT=1883
+      - MQTT_TOPIC=agricultura/sensores/#
       - INFLUX_URL=http://influxdb:8086
       - INFLUX_TOKEN=agro-iot-token-fase3-icesi-2026
       - INFLUX_ORG=agricultura
       - INFLUX_BUCKET=agro_iot_data
-    volumes:
-      - ./nodered/flows.json:/data/flows.json:ro
-      - ./nodered/settings.js:/data/settings.js:ro
-      - nodered_data:/data
     restart: unless-stopped
 
 volumes:
@@ -287,309 +288,25 @@ volumes:
   mosquitto_log:
   influxdb_data:
   influxdb_config:
-  nodered_data:
 ```
 
-### Puntos críticos de este docker-compose
+### Orden de arranque garantizado por healthchecks
 
-- `DOCKER_INFLUXDB_INIT_MODE=setup` hace que InfluxDB se auto-configure al primer inicio.
-  Si el volumen `influxdb_data` ya existe, esta variable se ignora (no reconfigura).
-- `DOCKER_INFLUXDB_INIT_RETENTION=0` significa retención infinita — los datos no se borran.
-- Node-RED monta `flows.json` y `settings.js` como `:ro` (read-only) para evitar que
-  Node-RED sobreescriba la configuración en el arranque.
-- El simulador referencia `../fase_2` como contexto de build para reutilizar el código existente.
+```
+1. mosquitto  → arranca primero
+2. influxdb   → arranca; DOCKER_INFLUXDB_INIT_MODE=setup crea org + bucket + token automáticamente
+3. simulator  → espera mosquitto healthy; empieza a publicar en MQTT
+4. gateway    → espera mosquitto + influxdb healthy; suscribe y empieza a escribir en InfluxDB
+```
+
+> **Nota:** `DOCKER_INFLUXDB_INIT_MODE=setup` solo se ejecuta si el volumen
+> `influxdb_data` está vacío (primer arranque). En reinicios posteriores se ignora.
 
 ---
 
-## 6. Paso 2 — Dockerfile de Node-RED
+## 6. Paso 2 — mosquitto.conf
 
-Crear `fase_3/nodered/Dockerfile` con el siguiente contenido:
-
-```dockerfile
-FROM nodered/node-red:latest
-
-# Instalar el plugin de InfluxDB v2 para Node-RED
-# node-red-contrib-influxdb soporta InfluxDB 1.x y 2.x
-RUN npm install --unsafe-perm node-red-contrib-influxdb
-
-# El directorio de trabajo de Node-RED es /data
-# flows.json y settings.js se montan como volúmenes desde docker-compose
-```
-
-> **Por qué este Dockerfile:** La imagen oficial de Node-RED no incluye el plugin
-> `node-red-contrib-influxdb`. Si se instala en tiempo de ejecución (desde la UI),
-> requiere reiniciar el contenedor y no es reproducible. Pre-instalarlo en la imagen
-> garantiza que el nodo `influxdb out` esté disponible cuando se cargue el flujo.
-
----
-
-## 7. Paso 3 — settings.js de Node-RED
-
-Crear `fase_3/nodered/settings.js` con el siguiente contenido:
-
-```javascript
-module.exports = {
-    // Deshabilitar cifrado de credenciales para entorno de laboratorio.
-    // Esto permite que el token de InfluxDB en flows.json sea leído en texto plano.
-    // NUNCA usar credentialSecret: false en producción.
-    credentialSecret: false,
-
-    // Directorio donde Node-RED guarda flows, credenciales y contexto
-    userDir: '/data',
-
-    // Puerto de la interfaz web
-    uiPort: process.env.PORT || 1880,
-
-    // Zona horaria
-    functionGlobalContext: {
-        TZ: process.env.TZ || 'America/Bogota'
-    },
-
-    // Logging detallado para debugging
-    logging: {
-        console: {
-            level: "info",
-            metrics: false,
-            audit: false
-        }
-    },
-
-    // Deshabilitar el editor en producción (opcional — dejarlo habilitado para el lab)
-    disableEditor: false,
-
-    // Habilitar el panel de debug
-    debugMaxLength: 1000,
-}
-```
-
----
-
-## 8. Paso 4 — flows.json (flujo completo Node-RED)
-
-Este es el archivo más importante. Contiene el flujo Node-RED pre-configurado que
-implementa el pipeline: `MQTT → JSON → Validación → InfluxDB`.
-
-Crear `fase_3/nodered/flows.json` con el siguiente contenido **exacto**:
-
-```json
-[
-  {
-    "id": "tab_fase3_agro",
-    "type": "tab",
-    "label": "Ingesta IoT Agrícola — Fase 3",
-    "disabled": false,
-    "info": "Pipeline: MQTT (Mosquitto) → Parse JSON → Validar + Transformar → InfluxDB\nTopics: agricultura/sensores/#\nMeasurement: sensor_data\nBucket: agro_iot_data"
-  },
-  {
-    "id": "cfg_mqtt_broker",
-    "type": "mqtt-broker",
-    "name": "Mosquitto Agro",
-    "broker": "mosquitto",
-    "port": "1883",
-    "clientid": "nodered_gateway_agro",
-    "autoConnect": true,
-    "usetls": false,
-    "protocolVersion": "4",
-    "keepalive": "60",
-    "cleansession": true,
-    "birthTopic": "",
-    "birthQos": "0",
-    "birthRetain": "false",
-    "birthPayload": "",
-    "closeTopic": "",
-    "closeQos": "0",
-    "closeRetain": "false",
-    "closePayload": "",
-    "willTopic": "",
-    "willQos": "0",
-    "willRetain": "false",
-    "willPayload": ""
-  },
-  {
-    "id": "cfg_influxdb",
-    "type": "influxdb",
-    "hostname": "influxdb",
-    "port": "8086",
-    "protocol": "http",
-    "database": "agro_iot_data",
-    "name": "InfluxDB Agricultura",
-    "usetls": false,
-    "influxdbVersion": "2.0",
-    "url": "http://influxdb:8086",
-    "rejectUnauthorized": false,
-    "token": "agro-iot-token-fase3-icesi-2026",
-    "org": "agricultura",
-    "bucket": "agro_iot_data"
-  },
-  {
-    "id": "node_mqtt_in",
-    "type": "mqtt in",
-    "z": "tab_fase3_agro",
-    "name": "Sensores IoT — Todas las parcelas",
-    "topic": "agricultura/sensores/#",
-    "qos": "1",
-    "datatype": "utf8",
-    "broker": "cfg_mqtt_broker",
-    "nl": false,
-    "rap": false,
-    "rh": 0,
-    "inputs": 0,
-    "x": 160,
-    "y": 200,
-    "wires": [["node_json_parse"]]
-  },
-  {
-    "id": "node_json_parse",
-    "type": "json",
-    "z": "tab_fase3_agro",
-    "name": "Parse JSON",
-    "property": "payload",
-    "action": "obj",
-    "pretty": false,
-    "x": 390,
-    "y": 200,
-    "wires": [["node_transform"]]
-  },
-  {
-    "id": "node_transform",
-    "type": "function",
-    "z": "tab_fase3_agro",
-    "name": "Validar + Transformar → InfluxDB",
-    "func": "const p = msg.payload;\n\n// ── Validación de campos obligatorios ─────────────────────────────────\nif (!p || typeof p !== 'object') {\n    node.warn('Payload vacío o no es objeto');\n    return null;\n}\nif (!p.parcela || !p.cultivo || !p.timestamp) {\n    node.warn('Campos obligatorios faltantes: ' + JSON.stringify(p));\n    return null;\n}\n\n// ── Construir fields solo con sensores presentes en el payload ─────────\nconst SENSOR_FIELDS = [\n    'temperature_air', 'humidity', 'rainfall',\n    'soil_ph', 'soil_moisture', 'solar_radiation',\n    'wind_speed', 'evapotranspiration'\n];\n\nconst fields = {};\nfor (const f of SENSOR_FIELDS) {\n    const v = p[f];\n    if (v !== undefined && v !== null && !isNaN(parseFloat(v))) {\n        fields[f] = parseFloat(v);\n    }\n}\n\nif (Object.keys(fields).length === 0) {\n    node.warn('Mensaje sin campos de sensores válidos: ' + JSON.stringify(p));\n    return null;\n}\n\n// ── Convertir timestamp string → nanosegundos (InfluxDB requiere ns) ──\n// payload.timestamp formato: 'YYYY-MM-DD HH:MM:SS'\nlet tsNs;\ntry {\n    const tsMs = new Date(p.timestamp.replace(' ', 'T')).getTime();\n    if (isNaN(tsMs)) throw new Error('timestamp inválido');\n    tsNs = tsMs * 1000000;  // milisegundos → nanosegundos\n} catch(e) {\n    node.warn('Error parseando timestamp: ' + p.timestamp);\n    tsNs = Date.now() * 1000000;  // fallback: timestamp actual\n}\n\n// ── Estructura que espera node-red-contrib-influxdb (array de puntos) ─\nmsg.payload = [\n    {\n        measurement: 'sensor_data',\n        tags: {\n            parcela:  p.parcela,\n            cultivo:  p.cultivo,\n            area_ha:  String(p.area_ha || '')\n        },\n        fields: fields,\n        timestamp: tsNs\n    }\n];\n\n// Pasar topic como metadata para debugging\nmsg.topic = p.parcela;\n\nreturn msg;",
-    "outputs": 1,
-    "noerr": 0,
-    "initialize": "",
-    "finalize": "",
-    "libs": [],
-    "x": 650,
-    "y": 200,
-    "wires": [["node_influxdb_out", "node_debug_ok"]]
-  },
-  {
-    "id": "node_influxdb_out",
-    "type": "influxdb out",
-    "z": "tab_fase3_agro",
-    "influxdb": "cfg_influxdb",
-    "name": "Escribir en InfluxDB",
-    "measurement": "sensor_data",
-    "precision": "ns",
-    "retentionPolicy": "",
-    "database": "agro_iot_data",
-    "precisionV18FluxV20": "ns",
-    "retentionPolicyV18Flux": "",
-    "org": "agricultura",
-    "bucket": "agro_iot_data",
-    "x": 940,
-    "y": 180,
-    "wires": []
-  },
-  {
-    "id": "node_debug_ok",
-    "type": "debug",
-    "z": "tab_fase3_agro",
-    "name": "Debug — payload enviado a InfluxDB",
-    "active": true,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "payload",
-    "targetType": "msg",
-    "statusVal": "",
-    "statusType": "auto",
-    "x": 980,
-    "y": 220,
-    "wires": []
-  },
-  {
-    "id": "node_catch_all",
-    "type": "catch",
-    "z": "tab_fase3_agro",
-    "name": "Capturar errores del flujo",
-    "scope": null,
-    "uncaught": false,
-    "x": 180,
-    "y": 340,
-    "wires": [["node_debug_error"]]
-  },
-  {
-    "id": "node_debug_error",
-    "type": "debug",
-    "z": "tab_fase3_agro",
-    "name": "Error Log",
-    "active": true,
-    "tosidebar": true,
-    "console": false,
-    "tostatus": false,
-    "complete": "true",
-    "targetType": "full",
-    "statusVal": "",
-    "statusType": "auto",
-    "x": 420,
-    "y": 340,
-    "wires": []
-  },
-  {
-    "id": "node_comment_arch",
-    "type": "comment",
-    "z": "tab_fase3_agro",
-    "name": "ARQUITECTURA: Sensores IoT → Mosquitto :1883 → Node-RED → InfluxDB :8086 | bucket: agro_iot_data | org: agricultura",
-    "info": "",
-    "x": 500,
-    "y": 80,
-    "wires": []
-  }
-]
-```
-
-### Explicación de cada nodo del flujo
-
-| Nodo | Tipo | Función |
-|---|---|---|
-| `cfg_mqtt_broker` | `mqtt-broker` | Config reutilizable: apunta a `mosquitto:1883` (hostname interno Docker) |
-| `cfg_influxdb` | `influxdb` | Config reutilizable: URL, token, org, bucket para InfluxDB v2 |
-| `node_mqtt_in` | `mqtt in` | Suscribe a `agricultura/sensores/#` — recibe mensajes de las 4 parcelas |
-| `node_json_parse` | `json` | Convierte el string JSON del payload MQTT a objeto JavaScript |
-| `node_transform` | `function` | Valida campos, construye structure InfluxDB, convierte timestamp a nanosegundos |
-| `node_influxdb_out` | `influxdb out` | Escribe el punto en InfluxDB usando la config `cfg_influxdb` |
-| `node_debug_ok` | `debug` | Muestra en sidebar de Node-RED cada payload escrito (para verificación) |
-| `node_catch_all` | `catch` | Captura cualquier error en el flujo y lo redirige al log de errores |
-| `node_debug_error` | `debug` | Muestra errores del flujo en el sidebar |
-
-### Lógica clave del nodo `function` (node_transform)
-
-```
-Input:  msg.payload = { timestamp, parcela, cultivo, area_ha, temperature_air, humidity, ... }
-        msg.topic   = "agricultura/sensores/parcela_1"
-
-Proceso:
-  1. Validar que existan: parcela, cultivo, timestamp
-  2. Construir fields{} solo con los sensores que llegaron en este tick
-     (no todos llegan en cada mensaje — depende de la frecuencia del sensor)
-  3. Convertir timestamp "YYYY-MM-DD HH:MM:SS" → nanosegundos epoch
-  4. Armar array de puntos para node-red-contrib-influxdb
-
-Output: msg.payload = [
-  {
-    measurement: "sensor_data",
-    tags:   { parcela, cultivo, area_ha },
-    fields: { temperature_air: 28.47, humidity: 70.83, ... },
-    timestamp: 1746280200000000000  // nanosegundos
-  }
-]
-```
-
-> **Por qué array:** `node-red-contrib-influxdb` acepta un array de puntos para
-> escritura en batch. Aunque aquí solo se escribe 1 punto por mensaje, usar el
-> formato array es compatible con versiones futuras que quieran hacer batching.
-
----
-
-## 9. Paso 5 — Levantar todos los servicios
-
-### Crear también el mosquitto.conf
-
-Crear `fase_3/mosquitto/mosquitto.conf` con el siguiente contenido
-(idéntico al de fase_2):
+Crear `fase_3/mosquitto/mosquitto.conf` con el siguiente contenido:
 
 ```
 listener 1883
@@ -600,145 +317,432 @@ log_dest file /mosquitto/log/mosquitto.log
 log_type all
 ```
 
-### Comando de arranque
+---
+
+## 7. Paso 3 — gateway/requirements.txt
+
+Crear `fase_3/gateway/requirements.txt` con el siguiente contenido:
+
+```
+paho-mqtt==1.6.1
+influxdb-client==1.40.0
+```
+
+---
+
+## 8. Paso 4 — gateway/Dockerfile
+
+Crear `fase_3/gateway/Dockerfile` con el siguiente contenido:
+
+```dockerfile
+FROM python:3.11-slim
+
+WORKDIR /app
+
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY gateway.py .
+
+CMD ["python", "gateway.py"]
+```
+
+---
+
+## 9. Paso 5 — gateway/gateway.py
+
+Este es el archivo más importante. Implementa el Gateway IoT en Python puro.
+
+Crear `fase_3/gateway/gateway.py` con el siguiente contenido **exacto**:
+
+```python
+#!/usr/bin/env python3
+"""
+Fase 3 — Gateway IoT Agrícola
+Universidad ICESI — Sistemas y Comunicaciones I — Mayo 2026
+
+Rol: Edge Computing Gateway
+  - Suscribe al Broker MQTT (Mosquitto)
+  - Recibe mensajes JSON de los 4 sensores simulados
+  - Valida y transforma cada mensaje
+  - Escribe en InfluxDB como serie temporal
+
+Pipeline:
+  Broker MQTT → on_message() → validar → Point InfluxDB → write_api.write()
+"""
+
+import json
+import logging
+import os
+import time
+from datetime import datetime, timezone
+
+import paho.mqtt.client as mqtt
+from influxdb_client import InfluxDBClient, Point, WritePrecision
+from influxdb_client.client.write_api import SYNCHRONOUS
+
+# ─── Logging ──────────────────────────────────────────────────────────────────
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s [%(name)s] %(levelname)s — %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+log = logging.getLogger("gateway")
+
+# ─── Configuración desde variables de entorno ─────────────────────────────────
+MQTT_BROKER = os.environ.get("MQTT_BROKER", "localhost")
+MQTT_PORT   = int(os.environ.get("MQTT_PORT", "1883"))
+MQTT_TOPIC  = os.environ.get("MQTT_TOPIC", "agricultura/sensores/#")
+
+INFLUX_URL    = os.environ.get("INFLUX_URL",    "http://localhost:8086")
+INFLUX_TOKEN  = os.environ.get("INFLUX_TOKEN",  "agro-iot-token-fase3-icesi-2026")
+INFLUX_ORG    = os.environ.get("INFLUX_ORG",    "agricultura")
+INFLUX_BUCKET = os.environ.get("INFLUX_BUCKET", "agro_iot_data")
+
+# ─── Campos de sensores válidos ───────────────────────────────────────────────
+# Solo estos campos se almacenan como fields en InfluxDB.
+# Todos los demás keys del payload se ignoran.
+SENSOR_FIELDS = {
+    "temperature_air",
+    "humidity",
+    "rainfall",
+    "soil_ph",
+    "soil_moisture",
+    "solar_radiation",
+    "wind_speed",
+    "evapotranspiration",
+}
+
+# ─── Cliente InfluxDB ─────────────────────────────────────────────────────────
+influx_client = InfluxDBClient(
+    url=INFLUX_URL,
+    token=INFLUX_TOKEN,
+    org=INFLUX_ORG,
+)
+write_api = influx_client.write_api(write_options=SYNCHRONOUS)
+
+
+def parse_timestamp(ts_str: str) -> datetime:
+    """
+    Convierte el timestamp del payload "YYYY-MM-DD HH:MM:SS" a datetime UTC.
+    Si falla el parseo, usa el timestamp actual como fallback.
+    """
+    try:
+        return datetime.strptime(ts_str, "%Y-%m-%d %H:%M:%S").replace(
+            tzinfo=timezone.utc
+        )
+    except (ValueError, TypeError):
+        log.warning("Timestamp inválido '%s' — usando tiempo actual", ts_str)
+        return datetime.now(tz=timezone.utc)
+
+
+def build_point(payload: dict) -> Point | None:
+    """
+    Construye un influxdb_client.Point desde el payload JSON del sensor.
+
+    Retorna None si el payload no tiene los campos obligatorios o
+    si no contiene ningún field de sensor válido.
+
+    Estructura del Point resultante:
+      measurement: sensor_data
+      tags:        parcela, cultivo, area_ha
+      fields:      los sensores presentes en este tick (payload parcial OK)
+      timestamp:   derivado de payload["timestamp"]
+    """
+    # Validar campos obligatorios
+    for required in ("parcela", "cultivo", "timestamp"):
+        if not payload.get(required):
+            log.warning("Campo obligatorio '%s' faltante: %s", required, payload)
+            return None
+
+    # Extraer solo los fields de sensores presentes en este payload
+    fields = {}
+    for sensor in SENSOR_FIELDS:
+        value = payload.get(sensor)
+        if value is not None:
+            try:
+                fields[sensor] = float(value)
+            except (ValueError, TypeError):
+                log.warning("Valor no numérico en '%s': %s", sensor, value)
+
+    if not fields:
+        log.warning("Payload sin campos de sensor válidos: %s", payload)
+        return None
+
+    # Construir el Point
+    ts = parse_timestamp(payload["timestamp"])
+
+    point = (
+        Point("sensor_data")
+        .tag("parcela", payload["parcela"])
+        .tag("cultivo", payload["cultivo"])
+        .tag("area_ha", str(payload.get("area_ha", "")))
+        .time(ts, WritePrecision.NANOSECONDS)
+    )
+
+    for field_name, field_value in fields.items():
+        point = point.field(field_name, field_value)
+
+    return point
+
+
+def on_connect(client, userdata, flags, rc):
+    """Callback al conectar al broker MQTT."""
+    if rc == 0:
+        log.info("✔ Conectado al broker MQTT %s:%d", MQTT_BROKER, MQTT_PORT)
+        client.subscribe(MQTT_TOPIC, qos=1)
+        log.info("Suscrito a topic: %s", MQTT_TOPIC)
+    else:
+        log.error("✘ Error de conexión MQTT rc=%d", rc)
+
+
+def on_disconnect(client, userdata, rc):
+    """Callback al desconectarse del broker."""
+    if rc != 0:
+        log.warning("Desconexión inesperada del broker MQTT (rc=%d) — reconectando…", rc)
+
+
+def on_message(client, userdata, msg):
+    """
+    Callback principal: se ejecuta por cada mensaje MQTT recibido.
+
+    Flujo:
+      1. Decodificar bytes → string UTF-8
+      2. Parsear JSON → dict
+      3. Construir Point de InfluxDB
+      4. Escribir en bucket
+    """
+    try:
+        # 1. Decodificar
+        raw = msg.payload.decode("utf-8")
+
+        # 2. Parsear JSON
+        try:
+            payload = json.loads(raw)
+        except json.JSONDecodeError as e:
+            log.error("JSON inválido en topic '%s': %s | raw: %s", msg.topic, e, raw[:200])
+            return
+
+        # 3. Construir Point
+        point = build_point(payload)
+        if point is None:
+            return
+
+        # 4. Escribir en InfluxDB
+        write_api.write(bucket=INFLUX_BUCKET, record=point)
+
+        # Log resumido para no saturar la consola
+        fields_presentes = [f for f in SENSOR_FIELDS if f in payload]
+        log.info(
+            "[%s] %s → InfluxDB | campos=%s",
+            payload.get("parcela", "?"),
+            payload.get("cultivo", "?"),
+            fields_presentes,
+        )
+
+    except Exception as e:
+        log.error("Error procesando mensaje de '%s': %s", msg.topic, e, exc_info=True)
+
+
+def connect_with_retry(client: mqtt.Client, max_retries: int = 15) -> bool:
+    """Intenta conectar al broker MQTT con reintentos."""
+    for attempt in range(1, max_retries + 1):
+        try:
+            client.connect(MQTT_BROKER, MQTT_PORT, keepalive=60)
+            return True
+        except Exception as exc:
+            log.warning("Intento %d/%d — broker no disponible: %s", attempt, max_retries, exc)
+            if attempt < max_retries:
+                time.sleep(3)
+    return False
+
+
+def main():
+    log.info("=" * 60)
+    log.info("  Gateway IoT Agrícola — Fase 3")
+    log.info("  Universidad ICESI — Sistemas y Comunicaciones I")
+    log.info("=" * 60)
+    log.info("MQTT  : %s:%d → topic %s", MQTT_BROKER, MQTT_PORT, MQTT_TOPIC)
+    log.info("InfluxDB: %s | org=%s | bucket=%s", INFLUX_URL, INFLUX_ORG, INFLUX_BUCKET)
+
+    # Configurar cliente MQTT
+    client = mqtt.Client(client_id="iot_gateway_agro", protocol=mqtt.MQTTv311)
+    client.on_connect    = on_connect
+    client.on_disconnect = on_disconnect
+    client.on_message    = on_message
+
+    # Conectar al broker con reintentos
+    if not connect_with_retry(client):
+        log.error("No se pudo conectar al broker MQTT después de varios intentos. Abortando.")
+        return
+
+    log.info("Gateway iniciado — escuchando mensajes MQTT…")
+
+    try:
+        # loop_forever() bloquea e invoca los callbacks automáticamente
+        # También maneja reconexiones automáticas si el broker se cae
+        client.loop_forever()
+    except KeyboardInterrupt:
+        log.info("Señal de interrupción — deteniendo gateway…")
+    finally:
+        client.disconnect()
+        write_api.close()
+        influx_client.close()
+        log.info("Gateway detenido correctamente.")
+
+
+if __name__ == "__main__":
+    main()
+```
+
+### Explicación del flujo en `on_message()`
+
+```
+msg.payload (bytes)
+      │ .decode("utf-8")
+      ▼
+string JSON
+      │ json.loads()
+      ▼
+dict Python { timestamp, parcela, cultivo, area_ha, temperature_air, ... }
+      │ build_point()
+      │   ├── validar: parcela, cultivo, timestamp presentes
+      │   ├── extraer solo SENSOR_FIELDS → dict fields{}
+      │   │   (el payload puede ser parcial — no todos los sensores
+      │   │    están en cada tick, depende de la frecuencia)
+      │   ├── parse_timestamp() → datetime UTC
+      │   └── construir Point("sensor_data")
+      │         .tag("parcela", ...)
+      │         .tag("cultivo", ...)
+      │         .tag("area_ha", ...)
+      │         .field("temperature_air", 28.47)
+      │         .field("humidity", 70.83)
+      │         ...
+      │         .time(ts, WritePrecision.NANOSECONDS)
+      ▼
+write_api.write(bucket="agro_iot_data", record=point)
+      ▼
+InfluxDB — measurement: sensor_data
+```
+
+### Por qué `SYNCHRONOUS` en write_api
+
+`write_options=SYNCHRONOUS` hace que cada `write()` espere confirmación de InfluxDB
+antes de continuar. Esto garantiza que no se pierdan puntos si InfluxDB está lento.
+La alternativa `ASYNCHRONOUS` es más rápida pero puede perder puntos en reinicio.
+Para un laboratorio con 4 parcelas enviando cada 15 s, el modo síncrono es suficiente.
+
+---
+
+## 10. Paso 6 — Levantar todos los servicios
 
 ```bash
 # Desde la carpeta fase_3/
 cd fase_3
 
-# Primera vez: construir imágenes y levantar todos los servicios
+# Primera vez: construir imágenes y levantar
 docker compose up --build
 
-# Ejecución sin rebuild (después del primer arranque)
-docker compose up
-
-# En background (para dejar corriendo y ver logs por separado)
+# En background (recomendado para demostración)
 docker compose up --build -d
-docker compose logs -f
+
+# Ver logs en tiempo real de un servicio específico
+docker compose logs -f gateway
+docker compose logs -f influxdb
 ```
 
-### Orden de arranque esperado (healthchecks garantizan el orden)
+### Salida esperada en logs al arrancar correctamente
 
 ```
-1. mosquitto      → arranca primero (broker)
-2. influxdb       → arranca y ejecuta DOCKER_INFLUXDB_INIT_MODE=setup (crea org + bucket + token)
-3. simulator      → espera mosquitto healthy, empieza a publicar
-4. nodered        → espera mosquitto + influxdb healthy, carga flows.json, conecta al broker
-```
-
-### Qué ver en los logs al arrancar correctamente
-
-```
-influxdb_agro    | ts=... lvl=info msg="Welcome to InfluxDB" ...
-influxdb_agro    | ts=... lvl=info msg="Listening" log_id=... service=tcp-listener ...
-nodered_gateway  | [info] Starting flows
-nodered_gateway  | [info] Started flows
-nodered_gateway  | [info] [mqtt in:Sensores IoT] Connected to broker: mqtt://mosquitto:1883
-iot_simulator    | ✔ Conectado al broker MQTT mosquitto:1883
-iot_simulator    | ▶  parcela_1 | cultivo=sugarcane  | área=5.0 ha | ...
+influxdb_agro  | ts=... msg="Welcome to InfluxDB"
+influxdb_agro  | ts=... msg="Listening" service=tcp-listener addr=:8086
+iot_gateway    | ========================================================
+iot_gateway    | Gateway IoT Agrícola — Fase 3
+iot_gateway    | ========================================================
+iot_gateway    | MQTT  : mosquitto:1883 → topic agricultura/sensores/#
+iot_gateway    | InfluxDB: http://influxdb:8086 | org=agricultura | bucket=agro_iot_data
+iot_gateway    | ✔ Conectado al broker MQTT mosquitto:1883
+iot_gateway    | Suscrito a topic: agricultura/sensores/#
+iot_gateway    | Gateway iniciado — escuchando mensajes MQTT…
+iot_gateway    | [parcela_1] sugarcane → InfluxDB | campos=['temperature_air', 'humidity', 'soil_ph', ...]
+iot_gateway    | [parcela_3] oil_palm  → InfluxDB | campos=['temperature_air', 'humidity', ...]
 ```
 
 ---
 
-## 10. Paso 6 — Verificar InfluxDB
+## 11. Paso 7 — Verificar InfluxDB
 
-### Verificar que InfluxDB está corriendo
+### Verificar que InfluxDB está corriendo y respondiendo
 
 ```bash
-# Desde el host
-curl -s http://localhost:8086/ping
-# Respuesta esperada: HTTP 204 (sin body)
+# Ping desde el host
+curl -s -o /dev/null -w "%{http_code}" http://localhost:8086/ping
+# Respuesta esperada: 204
 
-# O usando influx CLI dentro del contenedor
+# Ping desde dentro del contenedor
 docker exec influxdb_agro influx ping
 # Respuesta esperada: OK
 ```
 
-### Verificar org y bucket creados
+### Verificar que el bucket fue creado
 
 ```bash
-docker exec influxdb_agro influx org list \
-  --token agro-iot-token-fase3-icesi-2026
-# Debe mostrar: ID  Name → agricultura
-
 docker exec influxdb_agro influx bucket list \
   --token agro-iot-token-fase3-icesi-2026 \
   --org agricultura
 # Debe mostrar: agro_iot_data | infinite retention
 ```
 
-### Acceder a la UI web de InfluxDB
+### Acceder a la UI web
 
 1. Abrir `http://localhost:8086`
-2. Iniciar sesión: usuario `admin`, contraseña `agro_admin_2026`
-3. Navegar a **Data → Buckets** → verificar que existe `agro_iot_data`
-4. Navegar a **Data → API Tokens** → verificar el token `agro-iot-token-fase3-icesi-2026`
+2. Usuario: `admin` | Contraseña: `agro_admin_2026`
+3. Ir a **Data → Buckets** → verificar que existe `agro_iot_data`
 
 ---
 
-## 11. Paso 7 — Verificar Node-RED
+## 12. Paso 8 — Verificar el gateway Python
 
-### Acceder a la interfaz web
-
-1. Abrir `http://localhost:1880`
-2. Verificar que el flujo **"Ingesta IoT Agrícola — Fase 3"** está cargado
-3. El nodo `mqtt in` debe mostrar el indicador verde **"connected"**
-4. El nodo `influxdb out` debe mostrar el indicador verde sin errores
-
-### Verificar mensajes llegando en tiempo real
-
-En la interfaz de Node-RED:
-1. Hacer clic en el tab **Debug** (ícono de bicho en el panel derecho)
-2. Cada 15 segundos debe aparecer un nuevo payload del estilo:
-   ```json
-   [
-     {
-       "measurement": "sensor_data",
-       "tags": { "parcela": "parcela_1", "cultivo": "sugarcane", "area_ha": "5" },
-       "fields": { "temperature_air": 28.47, "humidity": 70.83, ... },
-       "timestamp": 1746280200000000000
-     }
-   ]
-   ```
-
-### Si el nodo MQTT muestra "disconnected"
+### Ver que el gateway está recibiendo y escribiendo mensajes
 
 ```bash
-# Verificar que mosquitto está corriendo
-docker ps | grep mqtt_broker
-# Si el contenedor existe pero está unhealthy:
-docker logs mqtt_broker --tail 20
+docker compose logs -f gateway
 ```
 
-### Si el nodo InfluxDB muestra error
+Cada 15 segundos deben aparecer líneas como:
+```
+[parcela_1] sugarcane → InfluxDB | campos=['temperature_air', 'humidity']
+[parcela_2] sugarcane → InfluxDB | campos=['temperature_air', 'humidity', 'wind_speed']
+[parcela_3] oil_palm  → InfluxDB | campos=['temperature_air', 'humidity']
+[parcela_4] oil_palm  → InfluxDB | campos=['temperature_air', 'humidity']
+```
+
+Cada 30 segundos también deben aparecer `soil_moisture`, `solar_radiation`.
+Cada 60 segundos también deben aparecer `rainfall`, `soil_ph`, `evapotranspiration`.
+
+### Verificar que el gateway suscribe al broker correctamente
 
 ```bash
-# Verificar conectividad desde Node-RED hacia InfluxDB
-docker exec nodered_gateway wget -qO- http://influxdb:8086/ping
-# Respuesta esperada: silencio (HTTP 204 sin body)
+# En otra terminal: suscribirse al mismo topic que el gateway
+docker exec -it mqtt_broker mosquitto_sub -t "agricultura/sensores/#" -v
+# Deben aparecer los JSON en tiempo real — si aparecen aquí, el gateway los recibe también
 ```
 
 ---
 
-## 12. Paso 8 — Verificar datos almacenados
+## 13. Paso 9 — Verificar datos almacenados
 
 ### Opción A — Data Explorer (UI web de InfluxDB)
 
-1. Ir a `http://localhost:8086`
-2. Navegar a **Explore**
-3. En el panel izquierdo seleccionar:
-   - **Bucket:** `agro_iot_data`
-   - **Measurement:** `sensor_data`
-   - **Field:** `temperature_air` (o cualquier otro)
-4. Hacer clic en **Submit**
-5. Deben aparecer series temporales con datos de las 4 parcelas
+1. Ir a `http://localhost:8086` → **Explore**
+2. Seleccionar: bucket `agro_iot_data`, measurement `sensor_data`, field `temperature_air`
+3. Hacer clic en **Submit** — deben aparecer 4 series (una por parcela)
 
-### Opción B — Flux query en el Data Explorer
+### Opción B — Flux query en la UI
 
-Ir a **Explore → Script Editor** y ejecutar:
+En **Explore → Script Editor** ejecutar:
 
 ```flux
-// Últimos 10 minutos de todos los sensores
 from(bucket: "agro_iot_data")
   |> range(start: -10m)
   |> filter(fn: (r) => r._measurement == "sensor_data")
@@ -751,24 +755,19 @@ from(bucket: "agro_iot_data")
 docker exec influxdb_agro influx query \
   --token agro-iot-token-fase3-icesi-2026 \
   --org agricultura \
-  '
-from(bucket: "agro_iot_data")
-  |> range(start: -10m)
-  |> filter(fn: (r) => r._measurement == "sensor_data")
-  |> limit(n: 10)
-  '
+  'from(bucket: "agro_iot_data")
+     |> range(start: -10m)
+     |> filter(fn: (r) => r._measurement == "sensor_data")
+     |> limit(n: 10)'
 ```
 
-**Resultado esperado:** tabla con columnas `_time`, `_measurement`, `_field`, `_value`,
-`parcela`, `cultivo` y valores numéricos de sensores.
+**Resultado esperado:** tabla con columnas `_time`, `_field`, `_value`, `parcela`, `cultivo`.
 
 ---
 
-## 13. Queries Flux de referencia
+## 14. Queries Flux de referencia
 
-Estas queries son útiles para demostración al profesor y para Fase 4.
-
-### Query 1 — Últimas lecturas por parcela
+### Query 1 — Última lectura de temperatura por parcela
 
 ```flux
 from(bucket: "agro_iot_data")
@@ -790,9 +789,11 @@ from(bucket: "agro_iot_data")
   |> mean()
 ```
 
-### Query 3 — Comparar humedad suelo caña vs palma
+### Query 3 — Comparar humedad de suelo caña vs palma
 
 ```flux
+// Demuestra que los datos de ambos cultivos son distintos:
+// Caña: soil_moisture 10–40% | Palma: soil_moisture 30–55%
 from(bucket: "agro_iot_data")
   |> range(start: -30m)
   |> filter(fn: (r) => r._measurement == "sensor_data")
@@ -813,7 +814,7 @@ from(bucket: "agro_iot_data")
   |> count()
 ```
 
-### Query 5 — Detectar temperatura fuera de rango óptimo (pre-alerta)
+### Query 5 — Lecturas fuera de rango óptimo (pre-alerta para Fase 4)
 
 ```flux
 // Caña: óptimo 28–35°C | Palma: óptimo 24–32°C
@@ -829,187 +830,141 @@ from(bucket: "agro_iot_data")
 
 ---
 
-## 14. Troubleshooting
+## 15. Troubleshooting
 
-### Problema: Node-RED no conecta a Mosquitto
+### El gateway no conecta a Mosquitto
 
-**Síntoma:** Nodo `mqtt in` muestra rojo / "disconnected"
+**Síntoma:** logs muestran "broker no disponible" en loop.
 
-**Causa:** Node-RED arrancó antes de que Mosquitto estuviera listo.
+**Causa:** el broker no está healthy todavía. El gateway reintenta cada 3 s durante 15 intentos.
 
-**Solución:**
+**Verificar:**
 ```bash
-# Reiniciar solo Node-RED (el broker sigue corriendo)
-docker compose restart nodered
-# Esperar 10 segundos y verificar en http://localhost:1880
+docker ps | grep mqtt_broker
+docker compose logs mosquitto
+```
+
+Si el broker está corriendo pero el gateway no conecta:
+```bash
+docker compose restart gateway
 ```
 
 ---
 
-### Problema: InfluxDB no recibe datos (nodo influxdb out no cambia de estado)
+### El gateway conecta pero no escribe en InfluxDB
 
-**Síntoma:** Debug panel de Node-RED muestra payloads correctos pero InfluxDB está vacío.
+**Síntoma:** logs muestran los mensajes recibidos pero no aparecen datos en InfluxDB.
 
-**Causa más común:** Token incorrecto o mismatch entre flows.json y la config de InfluxDB.
+**Causa más común:** token incorrecto o InfluxDB no terminó de inicializarse.
 
-**Verificación:**
+**Verificar:**
 ```bash
 # Probar el token directamente
 curl -s \
   -H "Authorization: Token agro-iot-token-fase3-icesi-2026" \
-  http://localhost:8086/api/v2/buckets?org=agricultura
-# Debe devolver JSON con el bucket agro_iot_data
+  "http://localhost:8086/api/v2/buckets?org=agricultura"
+# Debe retornar JSON con el bucket agro_iot_data
 ```
 
-**Solución:** Si el token no funciona, InfluxDB ya fue inicializado con uno diferente
-(el volumen `influxdb_data` persiste la config). Eliminar el volumen y reiniciar:
+**Si el volumen ya estaba inicializado con otro token:**
 ```bash
-docker compose down -v   # -v elimina los volúmenes
+docker compose down -v   # elimina todos los volúmenes
 docker compose up --build
 ```
 
 ---
 
-### Problema: flows.json se sobreescribe al modificar el flujo en la UI
+### InfluxDB falla al arrancar con "already initialized"
 
-**Síntoma:** Cambios en la UI de Node-RED se pierden al reiniciar.
+**Síntoma:** el contenedor `influxdb_agro` sale con error sobre inicialización previa.
 
-**Causa:** El archivo `flows.json` está montado como `:ro` (read-only).
+**Causa:** el volumen `influxdb_data` tiene datos de una ejecución anterior.
 
-**Solución (si se quieren persistir cambios de la UI):**
-1. Cambiar el volumen en docker-compose de `:ro` a `rw`
-2. O exportar el flujo desde la UI: `Menu → Export → Download`
-3. Reemplazar `fase_3/nodered/flows.json` con el exportado
+**Solución:** este error es inofensivo en la mayoría de los casos — InfluxDB sigue
+funcionando. Si se quiere empezar de cero: `docker compose down -v`.
 
 ---
 
-### Problema: `DOCKER_INFLUXDB_INIT_MODE=setup` da error al reiniciar
+### Los logs del gateway muestran "Campo obligatorio faltante"
 
-**Síntoma:** `influxdb_agro` falla al arrancar con mensaje de "already initialized".
+**Síntoma:** mensajes `WARNING — Campo obligatorio 'parcela' faltante`.
 
-**Causa:** El volumen `influxdb_data` ya contiene una instalación previa.
+**Causa:** el simulador está enviando un mensaje malformado o vacío.
 
-**Solución:** Este error es inofensivo — InfluxDB funciona igualmente.
-Si se quiere limpiar por completo:
-```bash
-docker compose down -v
-docker compose up --build
-```
-
----
-
-### Problema: Node-RED muestra "Cannot read properties of undefined"
-
-**Síntoma:** Error en el nodo `function` en el debug panel.
-
-**Causa:** El payload MQTT llegó como string vacío o el JSON estaba malformado.
-
-**Solución:** El nodo `function` ya tiene validación. Verificar que el simulador esté
-corriendo correctamente:
+**Verificar:**
 ```bash
 docker logs iot_simulator --tail 20
+# Confirmar que el simulador está corriendo y publicando JSON válido
 ```
 
 ---
 
-## 15. Entregables para el profesor
+### `influxdb-client` da error de conexión rechazada
 
-Según la rúbrica del trabajo final (Fase 3 = 15% de la nota), los entregables son:
+**Síntoma:** `urllib3.exceptions.NewConnectionError: Failed to establish connection`.
 
-### Evidencia 1 — Captura del flujo en Node-RED
+**Causa:** el gateway intentó escribir antes de que InfluxDB terminara de arrancar.
+El healthcheck del docker-compose debería prevenir esto, pero en máquinas lentas puede fallar.
 
-**Cómo obtenerla:**
-1. Abrir `http://localhost:1880`
-2. Tomar screenshot del flujo completo mostrando:
-   - Los nodos conectados (MQTT in → JSON → Function → InfluxDB out)
-   - El nodo `mqtt in` con indicador verde "connected"
-   - El panel Debug con mensajes llegando en tiempo real
-
-### Evidencia 2 — Configuración del Broker MQTT
-
-**Cómo obtenerla:**
+**Solución:**
 ```bash
-# Mostrar mensajes llegando al broker
-docker exec -it mqtt_broker mosquitto_sub -t "agricultura/sensores/#" -v
-# Tomar screenshot con JSON visible en terminal
+docker compose restart gateway
 ```
-
-### Evidencia 3 — Base de datos creada en InfluxDB
-
-**Cómo obtenerla:**
-1. Abrir `http://localhost:8086`
-2. Ir a **Data → Buckets**
-3. Tomar screenshot mostrando `agro_iot_data` con su organización `agricultura`
-
-### Evidencia 4 — Almacenamiento de datos
-
-**Cómo obtenerla:**
-1. En InfluxDB → **Explore**
-2. Ejecutar la Query 4 (contar registros por parcela) después de 5+ minutos de simulación
-3. Tomar screenshot del resultado mostrando registros de las 4 parcelas
-
-### Evidencia 5 — Consulta que muestre registros
-
-**Cómo obtenerla:**
-1. En InfluxDB → **Explore → Script Editor**
-2. Pegar y ejecutar la Query 1 (últimas lecturas por parcela)
-3. Tomar screenshot del gráfico o tabla resultante
-
-### Checklist de entregables
-
-```
-□ Screenshot del flujo Node-RED completo con nodos conectados
-□ Screenshot del panel Debug de Node-RED con payloads en tiempo real
-□ Screenshot de mosquitto_sub mostrando JSON de al menos 2 parcelas distintas
-□ Screenshot de InfluxDB → Buckets mostrando agro_iot_data
-□ Screenshot de InfluxDB → Explore con datos de las 4 parcelas
-□ Screenshot de la Query 3 (comparar humedad suelo caña vs palma) — demuestra que
-  los datos son diferentes entre cultivos
-□ Código fuente: fase_3/docker-compose.yml, nodered/flows.json, nodered/Dockerfile
-```
-
-> **Captura clave para nota máxima:** La Query 3 demuestra que los datos de caña y
-> palma son distintos (pH 4–6 vs 6–8.5, humedad suelo 30–55% vs 10–40%).
-> Esto valida que la Fase 2 tiene dos fuentes de datos reales separadas.
-
 ---
 
-## 16. Conexión con Fase 4
+## 17. Conexión con Fase 4
 
-La Fase 4 extiende lo construido aquí con **procesamiento, limpieza y alertas**.
-El agente que implemente la Fase 4 debe saber:
+### Estado del sistema al finalizar Fase 3
 
-### Qué existe al final de la Fase 3
-
-| Componente | URL | Datos |
+| Componente | URL / Acceso | Datos |
 |---|---|---|
 | InfluxDB | `http://localhost:8086` | bucket `agro_iot_data`, measurement `sensor_data` |
-| Node-RED | `http://localhost:1880` | flujo de ingesta activo |
+| Gateway | `docker compose logs gateway` | en ejecución continua |
 | Mosquitto | `localhost:1883` | topics `agricultura/sensores/<parcela>` |
 
-### Umbrales definidos en el EDA (Fase 1) para las alertas de Fase 4
+### Qué debe hacer Fase 4 (procesamiento y alertas)
+
+Fase 4 extiende el `gateway.py` con lógica de **validación, enriquecimiento y alertas**.
+El agente que implemente Fase 4 debe modificar `on_message()` para agregar:
+
+1. **Validación de rangos:** comparar cada field contra los umbrales del EDA Fase 1
+2. **Enriquecimiento:** calcular campos derivados (ej. índice de estrés hídrico)
+3. **Generación de alertas:** si se supera un umbral, publicar en `agricultura/alertas/<parcela>`
+   y/o escribir en un segundo measurement `alertas` en el mismo bucket
+
+### Umbrales del EDA Fase 1 para las alertas de Fase 4
 
 | Variable | Caña — Alerta Baja | Caña — Alerta Alta | Palma — Alerta Baja | Palma — Alerta Alta |
 |---|---|---|---|---|
-| `temperature_air` | < 18 °C | > 38 °C | < 18 °C | > 35 °C |
-| `humidity` | < 55% | > 88% | < 60% | > 95% |
-| `soil_moisture` | **< 15%** | > 40% | < 30% | > 55% |
+| `temperature_air` (°C) | < 18 | > 38 | < 18 | > 35 |
+| `humidity` (%) | < 55 | > 88 | < 60 | > 95 |
+| `soil_moisture` (%) | **< 15** | > 40 | < 30 | > 55 |
 | `soil_ph` | < 5.5 | > 8.5 | < 3.5 | > 6.5 |
-| `rainfall` | < 900 mm | > 1900 mm | < 100 mm/mes | > 210 mm/mes |
-| `solar_radiation` | < 12 | > 28 | < 12 | > 28 |
-| `wind_speed` | — | > 40 km/h | — | > 40 km/h |
+| `rainfall` (mm) | < 900 | > 1900 | < 100 | > 210 |
+| `solar_radiation` (MJ/m²) | < 12 | > 28 | < 12 | > 28 |
+| `wind_speed` (km/h) | — | > 40 | — | > 40 |
 
-> La humedad del suelo es el **indicador operacional más crítico** (mayor
-> discriminador Q4 vs Q1, +13.2% diferencia según EDA Fase 1).
+> La humedad del suelo es el **indicador crítico más importante** (+13.2% diferencia
+> Q4 vs Q1 en el EDA). La alerta de `soil_moisture < 15%` en caña debe ser la
+> primera en implementarse en Fase 4.
 
-### Cómo extender el flujo Node-RED en Fase 4
+### Esquema de topic para alertas (Fase 4)
 
-En Fase 4 se debe agregar, **después del nodo `function`**, una rama adicional con:
-- Nodo `switch` → evalúa si algún field supera los umbrales
-- Nodo `function` → construye alerta JSON con `{ tipo, parcela, variable, valor, umbral, timestamp }`
-- Nodo `mqtt out` → publica la alerta en `agricultura/alertas/<parcela>`
-- Nodo `influxdb out` → escribe la alerta en un segundo measurement `alertas` dentro
-  del mismo bucket `agro_iot_data`
+```
+agricultura/alertas/<parcela>
+
+Payload:
+{
+  "timestamp": "2026-05-03 14:30:00",
+  "parcela": "parcela_1",
+  "cultivo": "sugarcane",
+  "tipo_alerta": "SOIL_MOISTURE_LOW",
+  "variable": "soil_moisture",
+  "valor_actual": 12.3,
+  "umbral": 15.0,
+  "severidad": "CRITICA"
+}
+```
 
 ---
 
