@@ -203,17 +203,20 @@ La temperatura y la lluvia también discriminan positivamente, aunque en menor m
 | Viento (km/h) | 2–15 | 5–12 | — | > 40 |
 | Evapotranspiración (mm/d) | 2–8 | 3–7 | — | > 9 |
 
-### 7.2 Palma de aceite — Condiciones de referencia
+### 7.2 Palma de aceite — Variables agroclimáticas críticas (Tabla 2)
 
-La palma de aceite es un cultivo más exigente en términos de agua y temperatura estable:
+**Tabla 2. Variables agroclimáticas críticas para el cultivo de palma de aceite.**
 
-| Variable | Rango óptimo | Efecto de valores fuera de rango |
-|---|---|---|
-| Temperatura (°C) | 24–32 | < 18°C: detención del crecimiento; > 35°C: estrés térmico severo |
-| Lluvia anual (mm) | 1500–2500 | < 1200 mm/año: estrés hídrico crónico; reduce producción de aceite |
-| Humedad relativa (%) | 70–90 | Baja humedad aumenta evapotranspiración y estrés |
-| pH suelo | 4.0–6.0 | Fuera del rango: bloqueo de nutrientes esenciales (Fe, Mn, Zn) |
-| Humedad suelo (%) | 30–55 | Déficit: reducción directa en producción de racimos |
+| Variable | Rango óptimo | Efecto sobre el cultivo | Sensor utilizado |
+|---|---|---|---|
+| Temperatura del aire | 24 – 32 °C | Debajo de 18 °C se inhibe la polinización y el cuajado de frutos. Sobre 38 °C se daña el meristemo apical. | DHT22 / SHT35 |
+| Precipitación / Riego | 1800 – 2500 mm/año | La distribución uniforme es determinante. Un déficit sostenido por más de tres meses reduce la producción de RFF en el ciclo siguiente. | Pluviómetro + caudalímetro |
+| Radiación solar | > 1500 h sol/año | Factor limitante en la acumulación de aceite. Zonas con nubosidad persistente presentan rendimientos notoriamente inferiores. | Piranómetro CMP3 |
+| Humedad relativa | 75 – 85 % | Favorece la actividad del insecto polinizador Elaeidobius kamerunicus. El HR inferior al 60 % genera estrés estomático. | BME680 / HIH6130 |
+| Humedad del suelo | 40 – 80 % CC | El déficit sostenido provoca abscisión de frutos y reducción del peso medio de los racimos. | FDR / Tensiómetro |
+| Velocidad del viento | < 7 m/s | Vientos fuertes rompen las hojas flecha en palmas jóvenes y complican la operación de cosecha. | Anemómetro de cazoletas |
+| pH del suelo | 4.5 – 6.0 | La palma tolera suelos ácidos. pH superior a 7 limita la absorción de B, Mn y Zn, micronutrientes esenciales. | Electrodo de pH / lab. |
+| Temperatura del suelo | 24 – 30 °C | Regula la actividad microbiana y la mineralización del nitrógeno, afectando la fertilidad disponible. | DS18B20 sonda |
 
 ---
 
