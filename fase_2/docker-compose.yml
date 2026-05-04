@@ -1,0 +1,49 @@
+version: "3.8"
+
+# ─────────────────────────────────────────────────────────────────────────────
+# Fase 2 — Simulación de Sensores IoT Agrícolas
+# Servicios: Eclipse Mosquitto (broker MQTT) + Simulador Python
+# ─────────────────────────────────────────────────────────────────────────────
+
+services:
+
+  # ── Broker MQTT ────────────────────────────────────────────────────────────
+  mosquitto:
+    image: eclipse-mosquitto:latest
+    container_name: mqtt_broker
+    ports:
+      - "1883:1883"       # MQTT estándar (para sensores y gateway)
+      - "9000:9001"       # WebSocket (opcional — dashboards web)
+    volumes:
+      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
+      - mosquitto_data:/mosquitto/data
+      - mosquitto_log:/mosquitto/log
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "mosquitto_sub -t '$$SYS/#' -C 1 -i healthcheck -W 3"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Simulador IoT ──────────────────────────────────────────────────────────
+  simulator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: iot_simulator
+    depends_on:
+      mosquitto:
+        condition: service_healthy
+    environment:
+      - MQTT_BROKER=mosquitto
+      - MQTT_PORT=1883
+      - SUGARCANE_PATH=/app/datasets/sugarcane-prediction-dataset.csv
+      - PALM_PATH=/app/datasets/crop-production-countries.csv
+    volumes:
+      # Monta el directorio de datasets (un nivel arriba de fase_2)
+      - ../datasets:/app/datasets:ro
+    restart: unless-stopped
+
+volumes:
+  mosquitto_data:
+  mosquitto_log:
