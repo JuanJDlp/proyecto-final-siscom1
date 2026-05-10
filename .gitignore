@@ -220,3 +220,5 @@ __marimo__/
 .streamlit/secrets.toml
 .claude/
 *.png
+informe_completitud.md
+plan_implementacion_fases_4_5_7.md

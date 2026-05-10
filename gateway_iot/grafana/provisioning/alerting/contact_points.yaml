@@ -1,0 +1,34 @@
+apiVersion: 1
+
+contactPoints:
+  - orgId: 1
+    name: Email IoT Agricola
+    receivers:
+      - uid: email-iot-agricola
+        type: email
+        settings:
+          # Reemplazar con el correo destino de las alertas.
+          # Puede ser diferente al remitente configurado en grafana.ini [smtp].
+          # Para múltiples destinatarios separar con punto y coma:
+          #   addresses: correo1@gmail.com;correo2@gmail.com
+          addresses: TU_CORREO@gmail.com
+          singleEmail: false
+          message: |
+            {{ len .Alerts.Firing }} alerta(s) activa(s) en el sistema IoT Agrícola.
+
+            {{ range .Alerts.Firing -}}
+            🚨 {{ .Labels.alertname }}
+               Parcela  : {{ .Labels.parcela | default "todas" }}
+               Severidad: {{ .Labels.severity | default "warning" }}
+               Detalle  : {{ .Annotations.description }}
+               Desde    : {{ .StartsAt | date "2006-01-02 15:04:05" }}
+
+            {{ end -}}
+
+            {{ if .Alerts.Resolved -}}
+            ✅ {{ len .Alerts.Resolved }} alerta(s) resuelta(s):
+            {{ range .Alerts.Resolved -}}
+               ✔ {{ .Labels.alertname }} — resuelta a las {{ .EndsAt | date "15:04:05" }}
+            {{ end -}}
+            {{ end }}
+        disableResolveMessage: false

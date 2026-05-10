@@ -1,0 +1,32 @@
+apiVersion: 1
+
+datasources:
+  - name: InfluxDB-Processed
+    uid: agro-influxdb-processed
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: agricultura
+      defaultBucket: agro_iot_processed
+      tlsSkipVerify: true
+    secureJsonData:
+      token: agro-iot-token-fase3-icesi-2026
+    isDefault: true
+    editable: true
+
+  - name: InfluxDB-Alerts
+    uid: agro-influxdb-alerts
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: agricultura
+      defaultBucket: agro_iot_alerts
+      tlsSkipVerify: true
+    secureJsonData:
+      token: agro-iot-token-fase3-icesi-2026
+    isDefault: false
+    editable: true

@@ -1,0 +1,469 @@
+{
+  "__inputs": [],
+  "__requires": [],
+  "annotations": {
+    "list": [
+      {
+        "builtIn": 1,
+        "datasource": "-- Grafana --",
+        "enable": true,
+        "hide": true,
+        "iconColor": "rgba(0, 211, 255, 1)",
+        "name": "Annotations & Alerts",
+        "type": "dashboard"
+      },
+      {
+        "datasource": "InfluxDB-Alerts",
+        "enable": true,
+        "hide": false,
+        "iconColor": "red",
+        "name": "Alertas IoT",
+        "rawQuery": "from(bucket: \"agro_iot_alerts\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"alert_events\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> keep(columns: [\"_time\", \"parcela\", \"variable\", \"severity\", \"_value\"])",
+        "showIn": 0,
+        "step": "60s",
+        "textColumn": "variable",
+        "titleColumn": "parcela",
+        "type": "tags"
+      }
+    ]
+  },
+  "description": "Monitoreo agroclimático IoT en tiempo real — Fases 4, 5 y 7",
+  "editable": true,
+  "fiscalYearStartMonth": 0,
+  "graphTooltip": 1,
+  "id": null,
+  "links": [],
+  "panels": [
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "id": 100,
+      "title": "Estado Actual — Últimas Lecturas",
+      "type": "row"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 18 },
+              { "color": "orange", "value": 35 },
+              { "color": "red", "value": 38 }
+            ]
+          },
+          "unit": "celsius",
+          "mappings": []
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "id": 1,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background", "graphMode": "area", "justifyMode": "auto" },
+      "title": "Temperatura — parcela_1",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r._field == \"temperature_air\")\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 18 },
+              { "color": "orange", "value": 35 },
+              { "color": "red", "value": 38 }
+            ]
+          },
+          "unit": "celsius",
+          "mappings": []
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "id": 2,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background", "graphMode": "area", "justifyMode": "auto" },
+      "title": "Temperatura — parcela_2",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r._field == \"temperature_air\")\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 18 },
+              { "color": "orange", "value": 35 },
+              { "color": "red", "value": 38 }
+            ]
+          },
+          "unit": "celsius",
+          "mappings": []
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "id": 3,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background", "graphMode": "area", "justifyMode": "auto" },
+      "title": "Temperatura — parcela_3",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r._field == \"temperature_air\")\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "blue", "value": null },
+              { "color": "green", "value": 18 },
+              { "color": "orange", "value": 35 },
+              { "color": "red", "value": 38 }
+            ]
+          },
+          "unit": "celsius",
+          "mappings": []
+        }
+      },
+      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "id": 4,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background", "graphMode": "area", "justifyMode": "auto" },
+      "title": "Temperatura — parcela_4",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r._field == \"temperature_air\")\n  |> last()",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "color": { "mode": "thresholds" },
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 15 },
+              { "color": "green", "value": 24 },
+              { "color": "orange", "value": 40 }
+            ]
+          },
+          "unit": "percent",
+          "mappings": []
+        }
+      },
+      "gridPos": { "h": 4, "w": 12, "x": 0, "y": 5 },
+      "id": 5,
+      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background", "graphMode": "area", "justifyMode": "auto" },
+      "title": "Humedad del Suelo Actual — parcela_1 y parcela_3",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\" or r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r._field == \"soil_moisture\")\n  |> last()\n  |> group(columns: [\"parcela\"])",
+          "refId": "A"
+        }
+      ],
+      "type": "stat"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
+      "id": 101,
+      "title": "Series de Tiempo — Temperatura y Humedad (últimas 6 horas)",
+      "type": "row"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 10 },
+      "id": 10,
+      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
+      "title": "Temperatura del Aire — 4 Parcelas",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r._field == \"temperature_air\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 10 },
+      "id": 11,
+      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
+      "title": "Humedad Relativa — 4 Parcelas",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r._field == \"humidity\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 10 },
+      "id": 12,
+      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
+      "title": "Humedad del Suelo — parcela_1 y parcela_3",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\" or r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r._field == \"soil_moisture\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "id": 102,
+      "title": "Series de Tiempo — Lluvia, pH y Radiación Solar",
+      "type": "row"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "lengthmm",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 19 },
+      "id": 20,
+      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
+      "title": "Precipitación — 4 Parcelas",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r._field == \"rainfall\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 },
+          "min": 4,
+          "max": 9
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 19 },
+      "id": 21,
+      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
+      "title": "pH del Suelo — parcela_1 y parcela_3",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\" or r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r._field == \"soil_ph\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "wm2",
+          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 19 },
+      "id": 22,
+      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
+      "title": "Radiación Solar — parcela_1, parcela_2, parcela_3",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: -6h)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\" or r.parcela == \"parcela_2\" or r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r._field == \"solar_radiation\")\n  |> aggregateWindow(every: v.windowPeriod, fn: mean, createEmpty: false)\n  |> yield(name: \"mean\")",
+          "refId": "A"
+        }
+      ],
+      "type": "timeseries"
+    },
+    {
+      "collapsed": false,
+      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 27 },
+      "id": 103,
+      "title": "Indicadores de Estrés y Calidad de Datos",
+      "type": "row"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          },
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "Normal" }, "1": { "text": "ESTRÉS CALÓRICO" } } }
+          ]
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 28 },
+      "id": 30,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "text": {}
+      },
+      "title": "Índice de Estrés Calórico por Parcela",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r._field == \"heat_stress_index\")\n  |> last()\n  |> group(columns: [\"parcela\"])",
+          "refId": "A"
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "green", "value": null },
+              { "color": "red", "value": 1 }
+            ]
+          },
+          "mappings": [
+            { "type": "value", "options": { "0": { "text": "Normal" }, "1": { "text": "ESTRÉS HÍDRICO" } } }
+          ]
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 28 },
+      "id": 31,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "text": {}
+      },
+      "title": "Indicador de Estrés Hídrico por Parcela",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r._field == \"water_stress_flag\")\n  |> last()\n  |> group(columns: [\"parcela\"])",
+          "refId": "A"
+        }
+      ],
+      "type": "bargauge"
+    },
+    {
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "min": 0,
+          "max": 1,
+          "unit": "percentunit",
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              { "color": "red", "value": null },
+              { "color": "orange", "value": 0.5 },
+              { "color": "yellow", "value": 0.75 },
+              { "color": "green", "value": 0.9 }
+            ]
+          }
+        }
+      },
+      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 28 },
+      "id": 32,
+      "options": {
+        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "orientation": "horizontal",
+        "displayMode": "gradient",
+        "showUnfilled": true,
+        "text": {}
+      },
+      "title": "Quality Score por Parcela",
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "query": "from(bucket: \"agro_iot_processed\")\n  |> range(start: -1h)\n  |> filter(fn: (r) => r._measurement == \"sensor_data\")\n  |> filter(fn: (r) => r._field == \"quality_score\")\n  |> last()\n  |> group(columns: [\"parcela\"])",
+          "refId": "A"
+        }
+      ],
+      "type": "bargauge"
+    }
+  ],
+  "refresh": "30s",
+  "schemaVersion": 38,
+  "tags": ["iot", "agricultura", "icesi"],
+  "time": { "from": "now-6h", "to": "now" },
+  "timepicker": {},
+  "timezone": "browser",
+  "title": "Monitoreo Agroclimático IoT",
+  "uid": "agro-iot-dashboard-v1",
+  "version": 1
+}

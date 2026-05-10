@@ -1,0 +1,594 @@
+apiVersion: 1
+
+# Reglas de alerta agroclimáticas — Sistema IoT Agrícola
+# Fuente de umbrales: fase_1/analisis_eda.md §7.1 (caña) y §7.2 (palma)
+# Todas las queries apuntan al bucket agro_iot_processed (datos validados + derivados)
+#
+# Patrón de cada regla:
+#   A  →  Query Flux sobre agro_iot_processed
+#   B  →  Reduce (max/mean) para obtener un escalar
+#   C  →  Threshold — condición que dispara la alerta  ← condition: C
+
+groups:
+
+  # ── Grupo 1: Indicadores derivados (calculados por el gateway) ────────────────
+  - name: Indicadores de Estres
+    orgId: 1
+    folder: IoT Agricola
+    interval: 1m        # evaluar cada 1 minuto
+    rules:
+
+      # ── Regla 1: Estrés Calórico ─────────────────────────────────────────────
+      # Se activa cuando heat_stress_index = 1.0
+      # (temperatura_air supera el umbral alto del cultivo)
+      - uid: alert-heat-stress-index
+        title: Estres Calorico Detectado
+        condition: C
+        for: 2m           # debe mantenerse 2 minutos antes de disparar
+        noDataState: NoData
+        execErrState: Error
+        labels:
+          severity: warning
+          tipo: estres_calorico
+        annotations:
+          summary: "Temperatura crítica en una o más parcelas"
+          description: >
+            El índice de estrés calórico es 1 — la temperatura del aire
+            supera el umbral máximo del cultivo (38 °C). Revisar riego
+            y ventilación.
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300    # últimos 5 minutos
+              to: 0
+            datasourceUid: agro-influxdb-processed
+            model:
+              datasource:
+                type: influxdb
+                uid: agro-influxdb-processed
+              query: |
+                from(bucket: "agro_iot_processed")
+                  |> range(start: -5m)
+                  |> filter(fn: (r) => r._measurement == "sensor_data")
+                  |> filter(fn: (r) => r._field == "heat_stress_index")
+                  |> aggregateWindow(every: 1m, fn: max, createEmpty: false)
+              refId: A
+              hide: false
+
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: reduce
+              refId: B
+              expression: A
+              reducer: max
+              settings:
+                mode: dropNN
+
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0        # heat_stress_index > 0 → disparar
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+
+      # ── Regla 2: Estrés Hídrico ──────────────────────────────────────────────
+      # Se activa cuando water_stress_flag = 1.0
+      # (soil_moisture cae bajo el umbral mínimo del cultivo)
+      - uid: alert-water-stress-flag
+        title: Estres Hidrico Detectado
+        condition: C
+        for: 5m
+        noDataState: NoData
+        execErrState: Error
+        labels:
+          severity: critical
+          tipo: estres_hidrico
+        annotations:
+          summary: "Humedad del suelo por debajo del umbral crítico"
+          description: >
+            El indicador de estrés hídrico es 1 — la humedad del suelo
+            está por debajo del mínimo del cultivo. Caña: < 15 %. Iniciar
+            riego de emergencia.
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: agro-influxdb-processed
+            model:
+              datasource:
+                type: influxdb
+                uid: agro-influxdb-processed
+              query: |
+                from(bucket: "agro_iot_processed")
+                  |> range(start: -10m)
+                  |> filter(fn: (r) => r._measurement == "sensor_data")
+                  |> filter(fn: (r) => r._field == "water_stress_flag")
+                  |> aggregateWindow(every: 1m, fn: max, createEmpty: false)
+              refId: A
+              hide: false
+
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: reduce
+              refId: B
+              expression: A
+              reducer: max
+              settings:
+                mode: dropNN
+
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 0        # water_stress_flag > 0 → disparar
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+
+  # ── Grupo 2: Sensores directos ────────────────────────────────────────────────
+  - name: Sensores Criticos
+    orgId: 1
+    folder: IoT Agricola
+    interval: 1m
+    rules:
+
+      # ── Regla 3: Temperatura extrema (cualquier parcela) ──────────────────────
+      # Umbral: > 38 °C (caña y palma). Si supera 45.6 °C (+20%) → critical
+      - uid: alert-temperatura-alta
+        title: Temperatura del Aire Extrema
+        condition: C
+        for: 2m
+        noDataState: NoData
+        execErrState: Error
+        labels:
+          severity: warning
+          tipo: temperatura
+        annotations:
+          summary: "Temperatura del aire supera 38 °C"
+          description: >
+            La temperatura registrada supera el umbral máximo agronómico
+            (38 °C) para caña de azúcar y palma de aceite. Riesgo de
+            quema de hojas y pérdida de rendimiento.
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: agro-influxdb-processed
+            model:
+              datasource:
+                type: influxdb
+                uid: agro-influxdb-processed
+              query: |
+                from(bucket: "agro_iot_processed")
+                  |> range(start: -5m)
+                  |> filter(fn: (r) => r._measurement == "sensor_data")
+                  |> filter(fn: (r) => r._field == "temperature_air")
+                  |> aggregateWindow(every: 1m, fn: max, createEmpty: false)
+              refId: A
+              hide: false
+
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: reduce
+              refId: B
+              expression: A
+              reducer: max
+              settings:
+                mode: dropNN
+
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 38.0     # > 38 °C → disparar
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+
+      # ── Regla 4: Humedad relativa baja — Palma de aceite ─────────────────────
+      # Umbral palma: < 60 % (crítico si < 48 %, es decir -20% del umbral)
+      - uid: alert-humedad-baja-palma
+        title: Humedad Baja - Palma de Aceite
+        condition: C
+        for: 5m
+        noDataState: NoData
+        execErrState: Error
+        labels:
+          severity: warning
+          tipo: humedad
+          cultivo: oil_palm
+        annotations:
+          summary: "Humedad relativa por debajo del mínimo para palma (60 %)"
+          description: >
+            La humedad relativa en parcelas de palma de aceite ha caído
+            por debajo de 60 %. Riesgo de déficit hídrico foliar y
+            reducción de la fotosíntesis.
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: agro-influxdb-processed
+            model:
+              datasource:
+                type: influxdb
+                uid: agro-influxdb-processed
+              query: |
+                from(bucket: "agro_iot_processed")
+                  |> range(start: -10m)
+                  |> filter(fn: (r) => r._measurement == "sensor_data")
+                  |> filter(fn: (r) => r.cultivo == "oil_palm")
+                  |> filter(fn: (r) => r._field == "humidity")
+                  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
+              refId: A
+              hide: false
+
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: reduce
+              refId: B
+              expression: A
+              reducer: min
+              settings:
+                mode: dropNN
+
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    type: lt
+                    params:
+                      - 60.0     # < 60 % → disparar
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+
+      # ── Regla 5: Humedad relativa baja — Caña de azúcar ──────────────────────
+      # Umbral caña: < 55 %
+      - uid: alert-humedad-baja-cana
+        title: Humedad Baja - Cana de Azucar
+        condition: C
+        for: 5m
+        noDataState: NoData
+        execErrState: Error
+        labels:
+          severity: warning
+          tipo: humedad
+          cultivo: sugarcane
+        annotations:
+          summary: "Humedad relativa por debajo del mínimo para caña (55 %)"
+          description: >
+            La humedad relativa en parcelas de caña de azúcar ha caído
+            por debajo de 55 %. Riesgo de estrés hídrico foliar y
+            aumento de la evapotranspiración.
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: agro-influxdb-processed
+            model:
+              datasource:
+                type: influxdb
+                uid: agro-influxdb-processed
+              query: |
+                from(bucket: "agro_iot_processed")
+                  |> range(start: -10m)
+                  |> filter(fn: (r) => r._measurement == "sensor_data")
+                  |> filter(fn: (r) => r.cultivo == "sugarcane")
+                  |> filter(fn: (r) => r._field == "humidity")
+                  |> aggregateWindow(every: 1m, fn: mean, createEmpty: false)
+              refId: A
+              hide: false
+
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: reduce
+              refId: B
+              expression: A
+              reducer: min
+              settings:
+                mode: dropNN
+
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    type: lt
+                    params:
+                      - 55.0     # < 55 % → disparar
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+
+      # ── Regla 6: Viento fuerte — Palma de aceite ──────────────────────────────
+      # Umbral palma: > 25.2 km/h (7 m/s). Riesgo de volcamiento de palmas jóvenes.
+      - uid: alert-viento-fuerte-palma
+        title: Viento Fuerte - Palma de Aceite
+        condition: C
+        for: 3m
+        noDataState: NoData
+        execErrState: Error
+        labels:
+          severity: critical
+          tipo: viento
+          cultivo: oil_palm
+        annotations:
+          summary: "Velocidad del viento supera 25.2 km/h en parcelas de palma"
+          description: >
+            La velocidad del viento supera el umbral máximo para palma
+            de aceite (25.2 km/h = 7 m/s). Riesgo de daño mecánico y
+            volcamiento de plantas jóvenes.
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: agro-influxdb-processed
+            model:
+              datasource:
+                type: influxdb
+                uid: agro-influxdb-processed
+              query: |
+                from(bucket: "agro_iot_processed")
+                  |> range(start: -5m)
+                  |> filter(fn: (r) => r._measurement == "sensor_data")
+                  |> filter(fn: (r) => r.cultivo == "oil_palm")
+                  |> filter(fn: (r) => r._field == "wind_speed")
+                  |> aggregateWindow(every: 1m, fn: max, createEmpty: false)
+              refId: A
+              hide: false
+
+          - refId: B
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: reduce
+              refId: B
+              expression: A
+              reducer: max
+              settings:
+                mode: dropNN
+
+          - refId: C
+            relativeTimeRange:
+              from: 300
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    type: gt
+                    params:
+                      - 25.2     # > 25.2 km/h → disparar
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
+
+  # ── Grupo 3: Calidad de datos ─────────────────────────────────────────────────
+  - name: Calidad de Datos
+    orgId: 1
+    folder: IoT Agricola
+    interval: 2m
+    rules:
+
+      # ── Regla 7: Quality Score bajo ───────────────────────────────────────────
+      # Se activa cuando quality_score < 0.7 (más del 30% de campos inválidos)
+      - uid: alert-quality-score-bajo
+        title: Calidad de Datos Degradada
+        condition: C
+        for: 3m
+        noDataState: NoData
+        execErrState: Error
+        labels:
+          severity: warning
+          tipo: calidad
+        annotations:
+          summary: "Quality score < 0.70 — posible fallo de sensor"
+          description: >
+            El quality score ha caído por debajo de 0.70. Más del 30 %
+            de los campos del último mensaje contienen valores fuera de
+            rango o no numéricos. Revisar conectividad y estado del sensor.
+        data:
+          - refId: A
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: agro-influxdb-processed
+            model:
+              datasource:
+                type: influxdb
+                uid: agro-influxdb-processed
+              query: |
+                from(bucket: "agro_iot_processed")
+                  |> range(start: -10m)
+                  |> filter(fn: (r) => r._measurement == "sensor_data")
+                  |> filter(fn: (r) => r._field == "quality_score")
+                  |> aggregateWindow(every: 2m, fn: mean, createEmpty: false)
+              refId: A
+              hide: false
+
+          - refId: B
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: reduce
+              refId: B
+              expression: A
+              reducer: min
+              settings:
+                mode: dropNN
+
+          - refId: C
+            relativeTimeRange:
+              from: 600
+              to: 0
+            datasourceUid: "__expr__"
+            model:
+              datasource:
+                type: __expr__
+                uid: "__expr__"
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator:
+                    type: lt
+                    params:
+                      - 0.7      # quality_score < 0.70 → disparar
+                  operator:
+                    type: and
+                  query:
+                    params:
+                      - C
+                  reducer:
+                    type: last
+                    params: []
+                  type: query
