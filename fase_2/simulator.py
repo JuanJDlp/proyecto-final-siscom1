@@ -59,7 +59,8 @@ SENSOR_FREQ: Dict[str, int] = {
     "solar_radiation":    30,   # Tier 2
     "rainfall":           60,   # Tier 1
     "soil_ph":            60,   # Tier 1 — crítico para absorción de nutrientes
-    "evapotranspiration": 60,   # Tier 2 — calculada en gateway
+    # NOTA: evapotranspiración NO se simula como sensor; la calcula el gateway
+    # con la fórmula FAO Jensen-Haise a partir de temperatura + radiación.
 }
 
 # ─── Mapeo caña: nombre IoT → columna dataset ─────────────────────────────────
@@ -71,11 +72,12 @@ SUGARCANE_COLUMN_MAP: Dict[str, str] = {
     "soil_moisture":      "Soil_Moisture_%",
     "solar_radiation":    "Solar_Radiation_MJ_m2_day",
     "wind_speed":         "Wind_Speed_kmph",
-    "evapotranspiration": "Evapotranspiration_mm_day",
+    # evapotranspiration: NO se lee del dataset. Se calcula en el gateway
+    # (FAO Jensen-Haise) a partir de temperature_air + solar_radiation.
 }
 
 # ─── Mapeo palma: variables disponibles en el dataset de países ───────────────
-# El dataset de países solo tiene temperatura media anual y lluvia anual.
+# El dataset de países sol tiene temperatura media anual y lluvia anual.
 # El resto se genera con distribuciones estadísticas basadas en el EDA Fase 1.
 PALM_COLUMN_MAP: Dict[str, str] = {
     "temperature_air": "avg_temperature_c",
@@ -106,10 +108,7 @@ PALM_DISTRIBUTIONS: Dict[str, dict] = {
         "mean": 8.0,  "std": 2.0,
         "lo": 2.0,    "hi": 15.0,
     },
-    "evapotranspiration": {
-        "mean": 5.5,  "std": 1.0,
-        "lo": 2.0,    "hi": 9.0,
-    },
+    # evapotranspiration: calculada en el gateway, no simulada.
 }
 
 # Coeficiente AR(1): cuánto "recuerda" el sensor su valor anterior (0=sin memoria, 1=constante)
@@ -124,30 +123,29 @@ NOISE_STD: Dict[str, float] = {
     "soil_moisture":      0.50,   # sensor capacitivo
     "solar_radiation":    0.30,   # piranómetro
     "wind_speed":         0.20,   # anemómetro de copa
-    "evapotranspiration": 0.10,   # calculada — ruido bajo
 }
 
 # ─── Rangos válidos post-ruido por cultivo ────────────────────────────────────
+# Rangos válidos post-ruido por cultivo, ajustados al contexto Valle del Cauca.
+# Fuente: EDA Fase 1 §11.1 (rangos validados con datos reales de Colombia).
 RANGES_SUGARCANE: Dict[str, tuple] = {
-    "temperature_air":    (10.0,   45.0),
-    "humidity":           (50.0,   90.0),
-    "rainfall":           (800.0,  2000.0),
-    "soil_ph":            (6.0,    8.5),
-    "soil_moisture":      (10.0,   40.0),
-    "solar_radiation":    (15.0,   30.0),
+    "temperature_air":    (20.0,   33.0),    # Valle del Cauca: media 27.1°C
+    "humidity":           (55.0,   88.0),
+    "rainfall":           (900.0,  1900.0),  # Lluvia mensual del dataset (mm/mes)
+    "soil_ph":            (6.0,    8.0),
+    "soil_moisture":      (12.0,   38.0),
+    "solar_radiation":    (15.0,   28.0),
     "wind_speed":         (2.0,    15.0),
-    "evapotranspiration": (2.0,    8.0),
 }
 
 RANGES_PALM: Dict[str, tuple] = {
-    "temperature_air":    (18.0,   35.0),
-    "humidity":           (60.0,   95.0),
-    "rainfall":           (1200.0, 2500.0),
+    "temperature_air":    (22.0,   33.0),    # Palma trópico húmedo
+    "humidity":           (65.0,   92.0),
+    "rainfall":           (130.0,  260.0),   # Mensual estimado (anual ÷ 12)
     "soil_ph":            (4.0,    6.0),
-    "soil_moisture":      (30.0,   55.0),
-    "solar_radiation":    (15.0,   30.0),
-    "wind_speed":         (2.0,    15.0),
-    "evapotranspiration": (2.0,    9.0),
+    "soil_moisture":      (35.0,   75.0),
+    "solar_radiation":    (15.0,   28.0),
+    "wind_speed":         (2.0,    18.0),
 }
 
 # ─── Definición de parcelas ───────────────────────────────────────────────────
@@ -160,11 +158,12 @@ PARCELAS: List[dict] = [
                      "soil_ph", "soil_moisture", "solar_radiation"],
     },
     {
+        # Parcela 2: configuración heterogénea — sin sensores de suelo ni piranómetro
+        # (caso real: parcelas con menor infraestructura por costo).
         "id":       "parcela_2",
         "cultivo":  "sugarcane",
         "area_ha":  3.5,
-        "sensores": ["temperature_air", "humidity", "rainfall",
-                     "wind_speed", "evapotranspiration"],
+        "sensores": ["temperature_air", "humidity", "rainfall", "wind_speed"],
     },
     {
         "id":       "parcela_3",
