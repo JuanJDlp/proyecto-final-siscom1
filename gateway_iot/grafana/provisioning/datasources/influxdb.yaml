@@ -30,3 +30,19 @@ datasources:
       token: agro-iot-token-fase3-icesi-2026
     isDefault: false
     editable: true
+
+  # Fase 6 — bucket de predicciones ML
+  - name: InfluxDB-ML
+    uid: agro-influxdb-ml
+    type: influxdb
+    access: proxy
+    url: http://influxdb:8086
+    jsonData:
+      version: Flux
+      organization: agricultura
+      defaultBucket: agro_iot_ml
+      tlsSkipVerify: true
+    secureJsonData:
+      token: agro-iot-token-fase3-icesi-2026
+    isDefault: false
+    editable: true

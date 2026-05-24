@@ -1,18 +1,11 @@
-# ─────────────────────────────────────────────────────────────────────────────
-# Gateway IoT Agrícola — Fases 4 + 5 + 7
-# Stack completo: Mosquitto + Simulator + InfluxDB + Gateway + Grafana
-# ─────────────────────────────────────────────────────────────────────────────
-
 services:
 
-  # ── 1. Broker MQTT ─────────────────────────────────────────────────────────
   mosquitto:
-    image: eclipse-mosquitto:latest
+    build: ./mosquitto
     container_name: mqtt_broker_v2
     ports:
       - "1883:1883"
     volumes:
-      - ./mosquitto/mosquitto.conf:/mosquitto/config/mosquitto.conf:ro
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
     restart: unless-stopped
@@ -22,7 +15,6 @@ services:
       timeout: 5s
       retries: 5
 
-  # ── 2. Simulador de sensores IoT ───────────────────────────────────────────
   simulator:
     build:
       context: ../fase_2
@@ -37,10 +29,9 @@ services:
       - SUGARCANE_PATH=/app/datasets/sugarcane-prediction-dataset.csv
       - PALM_PATH=/app/datasets/crop-production-countries.csv
     volumes:
-      - ../datasets:/app/datasets:ro
+      - ../datasets:/app/datasets:ro,z
     restart: unless-stopped
 
-  # ── 3. Base de datos de series temporales ──────────────────────────────────
   influxdb:
     image: influxdb:2.7
     container_name: influxdb_agro_v2
@@ -64,7 +55,6 @@ services:
       timeout: 5s
       retries: 10
 
-  # ── 4. Gateway IoT — Pipeline Python ───────────────────────────────────────
   gateway:
     build:
       context: .
@@ -87,7 +77,26 @@ services:
       - INFLUX_BUCKET_ALERTS=agro_iot_alerts
     restart: unless-stopped
 
-  # ── 5. Grafana — Dashboard de visualización ─────────────────────────────────
+  # ── Fase 6: Predicción de variables agroclimáticas ──────────────────────────
+  ml_service:
+    build:
+      context: ../fase_6
+      dockerfile: Dockerfile
+    container_name: iot_ml_service
+    depends_on:
+      influxdb:
+        condition: service_healthy
+    environment:
+      - INFLUX_URL=http://influxdb:8086
+      - INFLUX_TOKEN=agro-iot-token-fase3-icesi-2026
+      - INFLUX_ORG=agricultura
+      - INFLUX_BUCKET_PROCESSED=agro_iot_processed
+      - INFLUX_BUCKET_ML=agro_iot_ml
+      - PREDICTION_INTERVAL=30
+      - WINDOW_SIZE=20
+      - STEPS_AHEAD=3
+    restart: unless-stopped
+
   grafana:
     image: grafana/grafana:latest
     container_name: grafana_agro
@@ -100,11 +109,9 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=agro_grafana_2026
       - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
-      - INFLUX_TOKEN=agro-iot-token-fase3-icesi-2026
-      - INFLUX_ORG=agricultura
     volumes:
-      - ./grafana/grafana.ini:/etc/grafana/grafana.ini
-      - ./grafana/provisioning:/etc/grafana/provisioning
+      - ./grafana/grafana.ini:/etc/grafana/grafana.ini:z
+      - ./grafana/provisioning:/etc/grafana/provisioning:z
       - grafana_data:/var/lib/grafana
     restart: unless-stopped
 
