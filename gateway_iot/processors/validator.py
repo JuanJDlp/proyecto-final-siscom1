@@ -9,7 +9,7 @@ log = logging.getLogger("validator")
 
 SENSOR_FIELDS = [
     "temperature_air", "humidity", "rainfall", "soil_ph",
-    "soil_moisture", "solar_radiation", "wind_speed", "evapotranspiration",
+    "soil_moisture", "solar_radiation", "wind_speed",
 ]
 
 
@@ -71,6 +71,5 @@ class DataValidator:
             soil_moisture=sensor_values.get("soil_moisture"),
             solar_radiation=sensor_values.get("solar_radiation"),
             wind_speed=sensor_values.get("wind_speed"),
-            evapotranspiration=sensor_values.get("evapotranspiration"),
             invalid_fields=invalid_fields,
         )

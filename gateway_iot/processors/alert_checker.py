@@ -1,3 +1,15 @@
+"""
+AlertChecker — compara la lectura procesada contra los umbrales por cultivo
+y emite eventos de alerta clasificados warning/critical.
+
+Verifica tanto variables crudas como derivadas:
+  · temperature_air, humidity, rainfall, soil_ph, soil_moisture,
+    solar_radiation, wind_speed, evapotranspiration  (rangos agronómicos)
+  · vpd                  (déficit de presión de vapor, > 3 kPa estrés severo)
+  · disease_risk         (riesgo de enfermedad > 0.7 → alerta)
+  · irrigation_need      (necesidad de riego > 0.6 → alerta)
+"""
+
 import logging
 from typing import List
 
@@ -6,9 +18,12 @@ from models.sensor_reading import AlertEvent, SensorReading
 
 log = logging.getLogger("alert_checker")
 
-SENSOR_FIELDS = [
+CHECKED_FIELDS = [
+    # Variables crudas
     "temperature_air", "humidity", "rainfall", "soil_ph",
-    "soil_moisture", "solar_radiation", "wind_speed", "evapotranspiration",
+    "soil_moisture", "solar_radiation", "wind_speed",
+    # Variables derivadas con umbrales agronómicos
+    "evapotranspiration", "vpd", "disease_risk", "irrigation_need",
 ]
 
 
@@ -17,7 +32,7 @@ class AlertChecker:
         alerts: List[AlertEvent] = []
         cultivo_thresholds = THRESHOLDS.get(reading.cultivo, {})
 
-        for field_name in SENSOR_FIELDS:
+        for field_name in CHECKED_FIELDS:
             value = getattr(reading, field_name, None)
             if value is None:
                 continue
@@ -43,7 +58,8 @@ class AlertChecker:
                 ))
                 log.info(
                     "[alert] %s | %s | %s=%.2f < %.2f → %s",
-                    reading.parcela, reading.cultivo, field_name, value, low, severity.upper(),
+                    reading.parcela, reading.cultivo, field_name, value, low,
+                    severity.upper(),
                 )
 
             elif high is not None and value > high:
@@ -61,7 +77,8 @@ class AlertChecker:
                 ))
                 log.info(
                     "[alert] %s | %s | %s=%.2f > %.2f → %s",
-                    reading.parcela, reading.cultivo, field_name, value, high, severity.upper(),
+                    reading.parcela, reading.cultivo, field_name, value, high,
+                    severity.upper(),
                 )
 
         return alerts

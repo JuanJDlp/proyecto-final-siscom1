@@ -10,6 +10,10 @@ from processors.validator import DataValidator
 log = logging.getLogger("pipeline")
 
 
+def _fmt(value):
+    return f"{value:.2f}" if isinstance(value, (int, float)) else "—"
+
+
 class DataPipeline:
     def __init__(
         self,
@@ -47,11 +51,20 @@ class DataPipeline:
             return
 
         log.info(
-            "[pipeline] %s | %s | quality_score=%.2f | heat_stress=%.0f | water_stress=%.0f | alerts=%d",
-            reading.parcela,
-            reading.cultivo,
+            "[pipeline] %s | %s | T=%s°C HR=%s%% SM=%s%% | VPD=%s ETo=%s ETc=%s WB=%s | "
+            "HI=%s GDD=%s disease=%s irrig=%s | Q=%.2f alerts=%d",
+            reading.parcela, reading.cultivo,
+            _fmt(reading.temperature_air),
+            _fmt(reading.humidity),
+            _fmt(reading.soil_moisture),
+            _fmt(reading.vpd),
+            _fmt(reading.evapotranspiration),
+            _fmt(reading.crop_water_requirement),
+            _fmt(reading.water_balance),
+            _fmt(reading.heat_index),
+            _fmt(reading.gdd_increment),
+            _fmt(reading.disease_risk),
+            _fmt(reading.irrigation_need),
             reading.quality_score,
-            reading.heat_stress_index,
-            reading.water_stress_flag,
             len(alerts),
         )

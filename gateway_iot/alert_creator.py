@@ -178,7 +178,73 @@ SCENARIOS = {
         ],
     },
 
-    # ── 5. Calidad de datos baja — campos con valores inválidos ───────────────
+    # ── 5. VPD alto — temperatura alta + humedad baja → estrés foliar ────────
+    "vpd": {
+        "label": "VPD Alto",
+        "icon":  "🥵",
+        "color": R,
+        "description": "T=38°C + HR=25% → VPD ≈ 4.9 kPa (> 3 kPa) → estrés foliar severo",
+        "messages": [
+            {
+                "parcela": "parcela_1", "cultivo": "sugarcane", "area_ha": 5.0,
+                "temperature_air": 38.0,
+                "humidity": 25.0,           # → VPD muy alto
+                "rainfall": 1300.0,
+                "soil_ph": 6.5,
+                "soil_moisture": 18.0,
+                "solar_radiation": 26.0,
+            },
+        ],
+    },
+
+    # ── 6. Riesgo de enfermedad alto — caña con HR>85% y T en rango óptimo ──
+    "disease": {
+        "label": "Riesgo Enfermedad",
+        "icon":  "🦠",
+        "color": Y,
+        "description": "Caña: T=26°C + HR=92% → roya/mancha. Palma: T=29°C + HR=88% + suelo encharcado",
+        "messages": [
+            {
+                "parcela": "parcela_1", "cultivo": "sugarcane", "area_ha": 5.0,
+                "temperature_air": 26.0,
+                "humidity": 92.0,
+                "rainfall": 1500.0,
+                "soil_ph": 6.7,
+                "soil_moisture": 32.0,
+                "solar_radiation": 18.0,
+            },
+            {
+                "parcela": "parcela_3", "cultivo": "oil_palm", "area_ha": 8.0,
+                "temperature_air": 29.0,
+                "humidity": 88.0,
+                "rainfall": 1800.0,
+                "soil_ph": 5.0,
+                "soil_moisture": 72.0,        # encharcado → riesgo Ganoderma
+                "solar_radiation": 18.0,
+            },
+        ],
+    },
+
+    # ── 7. Necesidad de riego alta — suelo seco + sin lluvia ─────────────────
+    "irrigation": {
+        "label": "Riego Urgente",
+        "icon":  "🚿",
+        "color": B,
+        "description": "soil_moisture=10% + rainfall=100mm/mes (balance hídrico negativo)",
+        "messages": [
+            {
+                "parcela": "parcela_1", "cultivo": "sugarcane", "area_ha": 5.0,
+                "temperature_air": 33.0,
+                "humidity": 50.0,
+                "rainfall": 100.0,
+                "soil_ph": 6.5,
+                "soil_moisture": 10.0,        # crítico
+                "solar_radiation": 27.0,
+            },
+        ],
+    },
+
+    # ── 8. Calidad de datos baja — campos con valores inválidos ──────────────
     "quality": {
         "label": "Calidad Degradada",
         "icon":  "⚠️",

@@ -52,7 +52,8 @@ Este directorio (`gateway_iot/`) implementa las fases 4, 5 y 7 en un único proy
 Refactorización completa del gateway de la fase 3 aplicando el principio de responsabilidad única (SRP). Cada clase tiene una sola función:
 
 - **`DataValidator`** — valida campos obligatorios y rangos físicos de cada sensor.
-- **`DataEnricher`** — calcula variables derivadas: `heat_stress_index`, `water_stress_flag` y `quality_score`.
+- **`DataEnricher`** — calcula **11 variables agronómicas derivadas** (VPD, ETo FAO, ETc, balance hídrico, dew point, THI, heat index continuo, GDD, riesgo de enfermedad, necesidad de riego, quality score) + 2 flags binarios.
+- **`AlertChecker`** — verifica umbrales para 11 variables (crudas y derivadas).
 - **`DataPipeline`** — orquesta el flujo completo en orden: validar → enriquecer → detectar alertas → escribir.
 
 Los datos se escriben en **tres buckets separados** en InfluxDB, diferenciando datos crudos, procesados y eventos de alerta.
@@ -113,9 +114,17 @@ Los datos se escriben en **tres buckets separados** en InfluxDB, diferenciando d
 | Parcela | Cultivo | Área | Sensores |
 |---------|---------|------|----------|
 | parcela_1 | Caña de azúcar | 5.0 ha | temperature_air, humidity, rainfall, soil_ph, soil_moisture, solar_radiation |
-| parcela_2 | Caña de azúcar | 3.5 ha | temperature_air, humidity, rainfall, wind_speed, evapotranspiration |
+| parcela_2 | Caña de azúcar | 3.5 ha | temperature_air, humidity, rainfall, wind_speed |
 | parcela_3 | Palma de aceite | 8.0 ha | temperature_air, humidity, rainfall, soil_ph, soil_moisture, solar_radiation |
 | parcela_4 | Palma de aceite | 6.5 ha | temperature_air, humidity, rainfall, wind_speed |
+
+> **Configuración heterogénea deliberada:** parcela_2 no tiene sensores de suelo ni piranómetro
+> — caso real de una parcela con menor infraestructura. parcela_4 tampoco mide soil_moisture
+> ni soil_ph (mantiene una huella mínima de hardware). Esta heterogeneidad pone a prueba la
+> tolerancia del pipeline a payloads incompletos.
+>
+> **Evapotranspiración:** no se simula como sensor. Se calcula en el gateway con la fórmula
+> FAO Jensen-Haise a partir de temperatura + radiación solar (ver §6 — `processors/agronomic.py`).
 
 ---
 
@@ -143,8 +152,9 @@ gateway_iot/
 │
 ├── processors/
 │   ├── validator.py                 # Valida campos obligatorios y rangos físicos
-│   ├── enricher.py                  # Calcula heat_stress_index, water_stress_flag, quality_score
-│   └── alert_checker.py             # Compara contra thresholds, clasifica warning/critical
+│   ├── agronomic.py                 # Fórmulas: VPD, ETo, GDD, riesgo enfermedad, riego, …
+│   ├── enricher.py                  # Orquesta cálculo de 11 derivadas + quality_score
+│   └── alert_checker.py             # Compara 11 variables contra umbrales (warning/critical)
 │
 ├── mosquitto/
 │   └── mosquitto.conf               # Configuración del broker MQTT
@@ -208,13 +218,44 @@ DataPipeline.process()
 
 ## 6. Lógica de procesamiento
 
-### Variables derivadas (DataEnricher)
+### Variables agronómicas derivadas (`processors/agronomic.py`)
 
-| Campo | Tipo | Lógica |
-|-------|------|--------|
-| `heat_stress_index` | float (0.0 / 1.0) | 1.0 si `temperature_air` supera el umbral alto del cultivo |
-| `water_stress_flag` | float (0.0 / 1.0) | 1.0 si `soil_moisture` cae bajo el umbral bajo del cultivo |
-| `quality_score` | float (0.0 – 1.0) | `campos_válidos / (campos_válidos + campos_inválidos)` |
+Todas las fórmulas usan literatura agronómica estándar (FAO-56, Tetens, NRC-1971, Inman-Bamber, Corley & Tinker). Cada una devuelve `None` si faltan los insumos.
+
+| Campo | Unidad | Fórmula | Significado agronómico |
+|-------|--------|---------|------------------------|
+| `vpd` | kPa | Tetens: `0.6108·exp(17.27T/(T+237.3))·(1−HR/100)` | Déficit de presión de vapor. Indicador #1 de transpiración. <0.5: muy húmedo (enfermedades). 0.5–1.5: óptimo. 1.5–3: estrés moderado. >3: cierre estomático |
+| `dew_point` | °C | Magnus | Punto de rocío. Si Tmin baja al dew point se condensa rocío → enfermedades fúngicas |
+| `thi` | índice | NRC 1971: `(1.8T+32)−(0.55−0.0055HR)·(1.8T−26)` | Temperature-Humidity Index. <72 normal, 72–79 leve, 80–89 moderado, ≥90 severo |
+| `heat_index` | 0–1 | `tanh(max(0,T−Topt)/8)` ponderado por HR | Reemplazo continuo del flag binario `heat_stress_index` |
+| `evapotranspiration` | mm/día | FAO Jensen-Haise: `(0.025T+0.078)·Rs/2.45` | ETo de referencia. Fallback Hargreaves cuando no hay radiación |
+| `crop_water_requirement` | mm/día | `ETo·Kc` (Kc: caña=1.25, palma=1.00) | ETc — agua que necesita el cultivo |
+| `water_balance` | mm/día | `(rainfall_mensual/30) − ETc` | Balance hídrico diario. Negativo = déficit, hay que regar |
+| `gdd_increment` | °C·día | `max(0, T−Tbase)` (Tbase: caña=18, palma=15) | Grados-día acumulables vía `aggregateWindow(1d, sum)`. Indicador fenológico |
+| `disease_risk` | 0–1 | Caña: T∈[20,32]°C ∧ HR>75%. Palma: T>26 ∧ HR>80 ∧ suelo>65% | Riesgo de roya/mancha (caña) o pudrición del cogollo (palma) |
+| `irrigation_need` | 0–1 | `max(0,(SM_low−soil_moisture)/SM_low)` agravado por balance hídrico negativo | Recomendación continua de riego |
+| `quality_score` | 0–1 | `válidos / (válidos + inválidos)` | Calidad del payload |
+
+### Variables crudas que SÍ se almacenan
+
+`temperature_air`, `humidity`, `rainfall`, `soil_ph`, `soil_moisture`, `solar_radiation`, `wind_speed`.
+`evapotranspiration` está ausente como variable de sensor; el gateway la sintetiza.
+
+### Flags binarios (compatibilidad con alertas iniciales)
+
+| Campo | Lógica |
+|-------|--------|
+| `heat_stress_index` | 1.0 si `temperature_air > umbral_alto` del cultivo |
+| `water_stress_flag` | 1.0 si `soil_moisture < umbral_bajo` del cultivo |
+
+Se mantienen porque son los disparadores naturales de las reglas de alerta más simples y son intuitivos en bargauge.
+
+### Constantes agronómicas por cultivo (`config/thresholds.py`)
+
+| Cultivo | Tbase (GDD) | Kc (ETc) | Topt (heat index) |
+|---------|-------------|----------|-------------------|
+| sugarcane | 18.0 °C | 1.25 | 27.0 °C |
+| oil_palm | 15.0 °C | 1.00 | 28.0 °C |
 
 ### Clasificación de severidad (AlertChecker)
 
@@ -234,8 +275,8 @@ Ejemplo:
 | Bucket | Contenido | Retention |
 |--------|-----------|-----------|
 | `agro_iot_data` | Datos crudos del simulador (measurement: `sensor_data`) | Infinita |
-| `agro_iot_processed` | Datos validados + `heat_stress_index`, `water_stress_flag`, `quality_score` | Infinita |
-| `agro_iot_alerts` | Eventos de alerta (measurement: `alert_events`) | 30 días |
+| `agro_iot_processed` | 7 variables crudas + 11 derivadas agronómicas + flags + quality_score | Infinita |
+| `agro_iot_alerts` | Eventos de alerta sobre 11 variables (measurement: `alert_events`) | 30 días |
 
 > `agro_iot_data` lo crea InfluxDB en el primer arranque.  
 > `agro_iot_processed` y `agro_iot_alerts` los crea el gateway automáticamente usando `BucketsApi` al iniciar.
@@ -250,7 +291,7 @@ Definidos en `config/thresholds.py`. Fuente: análisis EDA fase 1 (secciones 7.1
 
 | Variable | Alerta baja | Alerta alta | Unidad |
 |----------|-------------|-------------|--------|
-| temperature_air | < 18.0 | > 38.0 | °C |
+| temperature_air | < 18.0 | > 35.0 | °C |
 | rainfall | < 900.0 | > 1900.0 | mm/mes |
 | humidity | < 55.0 | > 88.0 | % |
 | soil_ph | < 5.5 | > 8.5 | pH |
@@ -258,15 +299,25 @@ Definidos en `config/thresholds.py`. Fuente: análisis EDA fase 1 (secciones 7.1
 | solar_radiation | < 12.0 | > 28.0 | MJ/m²/d |
 | wind_speed | — | > 40.0 | km/h |
 | evapotranspiration | — | > 9.0 | mm/d |
+| vpd | — | > 3.0 | kPa |
+| disease_risk | — | > 0.70 | score |
+| irrigation_need | — | > 0.60 | score |
 
 ### Palma de aceite (`oil_palm`)
 
 | Variable | Alerta baja | Alerta alta | Unidad |
 |----------|-------------|-------------|--------|
-| temperature_air | < 18.0 | > 38.0 | °C |
+| temperature_air | < 18.0 | > 35.0 | °C |
+| rainfall | < 150.0 | > 250.0 | mm/mes |
 | humidity | < 60.0 | — | % |
 | soil_ph | < 4.0 | > 7.0 | pH |
+| soil_moisture | < 30.0 | > 80.0 | % |
+| solar_radiation | < 15.0 | > 30.0 | MJ/m²/d |
 | wind_speed | — | > 25.2 | km/h |
+| evapotranspiration | — | > 9.0 | mm/d |
+| vpd | — | > 2.5 | kPa |
+| disease_risk | — | > 0.70 | score |
+| irrigation_need | — | > 0.60 | score |
 
 ---
 
@@ -402,32 +453,55 @@ El dashboard "Monitoreo Agroclimático IoT" aparece en la carpeta **IoT Agricola
 
 ## 11. Dashboard Grafana
 
-El dashboard `agro_dashboard.json` está pre-provisionado con 13 paneles organizados en 4 filas:
+El dashboard `agro_dashboard.json` está pre-provisionado con **27 paneles organizados en 6 filas temáticas** y **2 variables de template** (`$parcela`, `$cultivo`) que filtran todo el dashboard interactivamente.
 
-### Fila 1 — Estado actual (Stat panels)
+### Variables de template (top bar)
 
-Muestran el **último valor** conocido con código de color por umbral:
+- `parcela` — multi-select. "All" por defecto. Permite filtrar el dashboard a 1, 2 o las 4 parcelas.
+- `cultivo` — multi-select (sugarcane / oil_palm). Filtra por tipo de cultivo.
 
-- Temperatura actual — parcela_1, parcela_2, parcela_3, parcela_4 (4 paneles independientes)
-- Humedad del suelo actual — parcela_1 y parcela_3 combinadas (1 panel)
+### Fila 1 — Resumen Ejecutivo (6 stats)
 
-### Fila 2 — Series de tiempo (últimas 6 horas)
+| Panel | Métrica |
+|-------|---------|
+| Alertas activas (última hora) | conteo de eventos en `agro_iot_alerts` |
+| Críticas (24h) | filtra `severity == "critical"` |
+| Mensajes recibidos (5 min) | conteo de lecturas |
+| Quality score promedio | media de `quality_score` |
+| VPD máximo actual | máximo en últimos 10 min |
+| ETo promedio | media en última hora |
 
-- `temperature_air` — las 4 parcelas superpuestas
-- `humidity` — las 4 parcelas
-- `soil_moisture` — parcela_1 y parcela_3
+### Fila 2 — Estado por Parcela (4 tarjetas)
 
-### Fila 3 — Series de tiempo
+Una tarjeta `stat` vertical por parcela mostrando hasta 7 variables simultáneas: temperatura, humedad, suelo, VPD, ETo, riesgo de enfermedad, necesidad de riego (la combinación depende de los sensores de esa parcela).
 
-- `rainfall` — las 4 parcelas
-- `soil_ph` — parcela_1 y parcela_3
-- `solar_radiation` — parcela_1, parcela_2, parcela_3
+### Fila 3 — Variables Climáticas Primarias (4 timeseries)
 
-### Fila 4 — Indicadores de estrés (Bar Gauge)
+`temperature_air`, `humidity`, `soil_moisture`, `rainfall` — las 4 parcelas superpuestas, leyenda con min/mean/max/last.
 
-- `heat_stress_index` por parcela — verde (0) / rojo (1)
-- `water_stress_flag` por parcela — verde (0) / rojo (1)
-- `quality_score` por parcela — rojo < 0.5 / amarillo < 0.9 / verde ≥ 0.9
+### Fila 4 — Variables Secundarias (3 timeseries)
+
+`wind_speed`, `solar_radiation`, `soil_ph`.
+
+### Fila 5 — Indicadores Agronómicos Derivados (6 timeseries)
+
+| Panel | Fuente |
+|-------|--------|
+| VPD (kPa) con zonas de color | `vpd` |
+| ETo + ETc demanda hídrica | `evapotranspiration` + `crop_water_requirement` |
+| GDD acumulado por hora | `gdd_increment` (suma móvil) |
+| Riesgo de enfermedad | `disease_risk` |
+| Heat Index continuo | `heat_index` |
+| Balance hídrico diario | `water_balance` |
+
+### Fila 6 — Indicadores de Riesgo y Calidad (4 bargauge)
+
+`irrigation_need`, `disease_risk`, `water_stress_flag`, `quality_score` — gradient horizontal por parcela.
+
+### Fila 7 — Alertas Agroclimáticas
+
+- **Tabla** con las últimas 30 alertas (columnas: tiempo, parcela, cultivo, variable, severidad coloreada, valor, umbral).
+- **Pie chart** donut con conteo de alertas 24h por severidad.
 
 ### Anotaciones de alerta
 

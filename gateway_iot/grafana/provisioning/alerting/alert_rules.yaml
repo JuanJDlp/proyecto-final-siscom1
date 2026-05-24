@@ -507,7 +507,156 @@ groups:
                     params: []
                   type: query
 
-  # ── Grupo 3: Calidad de datos ─────────────────────────────────────────────────
+  # ── Grupo 3: Indicadores agronómicos derivados ───────────────────────────────
+  - name: Indicadores Agronomicos
+    orgId: 1
+    folder: IoT Agricola
+    interval: 1m
+    rules:
+
+      # ── Regla A: VPD alto (estrés foliar por transpiración) ──────────────────
+      - uid: alert-vpd-alto
+        title: VPD Alto - Estres Foliar
+        condition: C
+        for: 3m
+        noDataState: NoData
+        execErrState: Error
+        labels:
+          severity: warning
+          tipo: vpd
+        annotations:
+          summary: "Déficit de presión de vapor (VPD) > 3 kPa"
+          description: >
+            El déficit de presión de vapor supera 3 kPa — el cultivo
+            cierra estomas para conservar agua y la fotosíntesis se
+            detiene. Revisar riego y considerar sombreado.
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: agro-influxdb-processed
+            model:
+              datasource: {type: influxdb, uid: agro-influxdb-processed}
+              query: |
+                from(bucket: "agro_iot_processed")
+                  |> range(start: -10m)
+                  |> filter(fn: (r) => r._field == "vpd")
+                  |> aggregateWindow(every: 1m, fn: max, createEmpty: false)
+              refId: A
+          - refId: B
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: "__expr__"
+            model: {datasource: {type: __expr__, uid: "__expr__"}, type: reduce, refId: B, expression: A, reducer: max, settings: {mode: dropNN}}
+          - refId: C
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: "__expr__"
+            model:
+              datasource: {type: __expr__, uid: "__expr__"}
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator: {type: gt, params: [3.0]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last, params: []}
+                  type: query
+
+      # ── Regla B: Riesgo de enfermedad alto ────────────────────────────────────
+      - uid: alert-disease-risk-alto
+        title: Riesgo de Enfermedad Foliar Elevado
+        condition: C
+        for: 5m
+        noDataState: NoData
+        execErrState: Error
+        labels:
+          severity: warning
+          tipo: enfermedad
+        annotations:
+          summary: "Riesgo de enfermedad > 0.7 (sostenido 5 min)"
+          description: >
+            Las condiciones de temperatura y humedad favorecen el
+            desarrollo de patógenos foliares (caña: roya naranja /
+            mancha amarilla; palma: pudrición del cogollo). Considerar
+            aplicación preventiva de fungicida.
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: agro-influxdb-processed
+            model:
+              datasource: {type: influxdb, uid: agro-influxdb-processed}
+              query: |
+                from(bucket: "agro_iot_processed")
+                  |> range(start: -10m)
+                  |> filter(fn: (r) => r._field == "disease_risk")
+                  |> aggregateWindow(every: 1m, fn: max, createEmpty: false)
+              refId: A
+          - refId: B
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: "__expr__"
+            model: {datasource: {type: __expr__, uid: "__expr__"}, type: reduce, refId: B, expression: A, reducer: max, settings: {mode: dropNN}}
+          - refId: C
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: "__expr__"
+            model:
+              datasource: {type: __expr__, uid: "__expr__"}
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator: {type: gt, params: [0.7]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last, params: []}
+                  type: query
+
+      # ── Regla C: Necesidad de riego alta ──────────────────────────────────────
+      - uid: alert-irrigation-need
+        title: Necesidad de Riego Alta
+        condition: C
+        for: 5m
+        noDataState: NoData
+        execErrState: Error
+        labels:
+          severity: critical
+          tipo: riego
+        annotations:
+          summary: "Necesidad de riego > 0.6 — déficit hídrico sostenido"
+          description: >
+            El indicador integrado de necesidad de riego supera 0.6
+            durante 5 minutos. Combina humedad de suelo baja con balance
+            hídrico negativo (rainfall − ETc < 0). Iniciar riego.
+        data:
+          - refId: A
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: agro-influxdb-processed
+            model:
+              datasource: {type: influxdb, uid: agro-influxdb-processed}
+              query: |
+                from(bucket: "agro_iot_processed")
+                  |> range(start: -10m)
+                  |> filter(fn: (r) => r._field == "irrigation_need")
+                  |> aggregateWindow(every: 1m, fn: max, createEmpty: false)
+              refId: A
+          - refId: B
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: "__expr__"
+            model: {datasource: {type: __expr__, uid: "__expr__"}, type: reduce, refId: B, expression: A, reducer: max, settings: {mode: dropNN}}
+          - refId: C
+            relativeTimeRange: {from: 600, to: 0}
+            datasourceUid: "__expr__"
+            model:
+              datasource: {type: __expr__, uid: "__expr__"}
+              type: threshold
+              refId: C
+              expression: B
+              conditions:
+                - evaluator: {type: gt, params: [0.6]}
+                  operator: {type: and}
+                  query: {params: [C]}
+                  reducer: {type: last, params: []}
+                  type: query
+
+  # ── Grupo 4: Calidad de datos ─────────────────────────────────────────────────
   - name: Calidad de Datos
     orgId: 1
     folder: IoT Agricola

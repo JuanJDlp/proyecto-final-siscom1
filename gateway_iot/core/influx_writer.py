@@ -3,16 +3,24 @@ from typing import List
 
 from influxdb_client import InfluxDBClient, Point, WritePrecision
 from influxdb_client.client.write_api import SYNCHRONOUS
-from influxdb_client.domain.bucket import Bucket
 
 from config.settings import Settings
 from models.sensor_reading import AlertEvent, SensorReading
 
 log = logging.getLogger("influx_writer")
 
-SENSOR_FIELDS = [
+# Variables crudas que escribimos al bucket de raw data tal como llegan.
+RAW_FIELDS = [
     "temperature_air", "humidity", "rainfall", "soil_ph",
-    "soil_moisture", "solar_radiation", "wind_speed", "evapotranspiration",
+    "soil_moisture", "solar_radiation", "wind_speed",
+]
+
+# Variables (crudas + derivadas) que se escriben en el bucket procesado.
+PROCESSED_FIELDS = RAW_FIELDS + [
+    "evapotranspiration", "crop_water_requirement", "water_balance",
+    "vpd", "dew_point", "thi", "heat_index",
+    "gdd_increment", "disease_risk", "irrigation_need",
+    "heat_stress_index", "water_stress_flag", "quality_score",
 ]
 
 
@@ -37,45 +45,42 @@ class InfluxWriter:
         ]:
             existing = buckets_api.find_bucket_by_name(bucket_name)
             if existing is None:
-                buckets_api.create_bucket(bucket_name=bucket_name, org=org, retention_rules=[
-                    {"type": "expire", "everySeconds": retention_seconds, "shardGroupDurationSeconds": 0}
-                ] if retention_seconds > 0 else [])
+                buckets_api.create_bucket(
+                    bucket_name=bucket_name, org=org,
+                    retention_rules=[
+                        {"type": "expire", "everySeconds": retention_seconds,
+                         "shardGroupDurationSeconds": 0}
+                    ] if retention_seconds > 0 else [],
+                )
                 log.info("Bucket '%s' creado.", bucket_name)
             else:
                 log.info("Bucket '%s' ya existe.", bucket_name)
 
-    def write_raw(self, reading: SensorReading):
-        point = (
+    def _base_point(self, reading: SensorReading) -> Point:
+        p = (
             Point("sensor_data")
             .tag("parcela", reading.parcela)
             .tag("cultivo", reading.cultivo)
-            .tag("area_ha", str(reading.area_ha))
             .time(reading.timestamp, WritePrecision.NS)
         )
-        for field_name in SENSOR_FIELDS:
-            value = getattr(reading, field_name, None)
-            if value is not None:
-                point = point.field(field_name, value)
+        if reading.area_ha is not None:
+            p = p.field("area_ha", float(reading.area_ha))
+        return p
 
+    def write_raw(self, reading: SensorReading):
+        point = self._base_point(reading)
+        for f in RAW_FIELDS:
+            value = getattr(reading, f, None)
+            if value is not None:
+                point = point.field(f, value)
         self.write_api.write(bucket=self.settings.influx_bucket_raw, record=point)
 
     def write_processed(self, reading: SensorReading):
-        point = (
-            Point("sensor_data")
-            .tag("parcela", reading.parcela)
-            .tag("cultivo", reading.cultivo)
-            .tag("area_ha", str(reading.area_ha))
-            .time(reading.timestamp, WritePrecision.NS)
-        )
-        for field_name in SENSOR_FIELDS:
-            value = getattr(reading, field_name, None)
+        point = self._base_point(reading)
+        for f in PROCESSED_FIELDS:
+            value = getattr(reading, f, None)
             if value is not None:
-                point = point.field(field_name, value)
-
-        point = point.field("heat_stress_index", reading.heat_stress_index)
-        point = point.field("water_stress_flag", reading.water_stress_flag)
-        point = point.field("quality_score", reading.quality_score)
-
+                point = point.field(f, float(value))
         self.write_api.write(bucket=self.settings.influx_bucket_processed, record=point)
 
     def write_alerts(self, alerts: List[AlertEvent]):
