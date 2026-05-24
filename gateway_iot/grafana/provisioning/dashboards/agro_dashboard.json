@@ -27,7 +27,7 @@
       }
     ]
   },
-  "description": "Monitoreo agroclimático IoT en tiempo real — Fases 4, 5 y 7",
+  "description": "Monitoreo agroclim\u00e1tico IoT en tiempo real \u2014 Fases 4, 5 y 7",
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 1,
@@ -36,33 +36,68 @@
   "panels": [
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 0 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 0
+      },
       "id": 100,
-      "title": "Estado Actual — Últimas Lecturas",
+      "title": "Estado Actual \u2014 \u00daltimas Lecturas",
       "type": "row"
     },
     {
       "datasource": "InfluxDB-Processed",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "blue", "value": null },
-              { "color": "green", "value": 18 },
-              { "color": "orange", "value": 35 },
-              { "color": "red", "value": 38 }
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 18
+              },
+              {
+                "color": "orange",
+                "value": 35
+              },
+              {
+                "color": "red",
+                "value": 38
+              }
             ]
           },
           "unit": "celsius",
           "mappings": []
         }
       },
-      "gridPos": { "h": 4, "w": 6, "x": 0, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 0,
+        "y": 1
+      },
       "id": 1,
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background", "graphMode": "area", "justifyMode": "auto" },
-      "title": "Temperatura — parcela_1",
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      },
+      "title": "Temperatura \u2014 parcela_1",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -76,24 +111,54 @@
       "datasource": "InfluxDB-Processed",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "blue", "value": null },
-              { "color": "green", "value": 18 },
-              { "color": "orange", "value": 35 },
-              { "color": "red", "value": 38 }
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 18
+              },
+              {
+                "color": "orange",
+                "value": 35
+              },
+              {
+                "color": "red",
+                "value": 38
+              }
             ]
           },
           "unit": "celsius",
           "mappings": []
         }
       },
-      "gridPos": { "h": 4, "w": 6, "x": 6, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 6,
+        "y": 1
+      },
       "id": 2,
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background", "graphMode": "area", "justifyMode": "auto" },
-      "title": "Temperatura — parcela_2",
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      },
+      "title": "Temperatura \u2014 parcela_2",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -107,24 +172,54 @@
       "datasource": "InfluxDB-Processed",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "blue", "value": null },
-              { "color": "green", "value": 18 },
-              { "color": "orange", "value": 35 },
-              { "color": "red", "value": 38 }
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 18
+              },
+              {
+                "color": "orange",
+                "value": 35
+              },
+              {
+                "color": "red",
+                "value": 38
+              }
             ]
           },
           "unit": "celsius",
           "mappings": []
         }
       },
-      "gridPos": { "h": 4, "w": 6, "x": 12, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 12,
+        "y": 1
+      },
       "id": 3,
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background", "graphMode": "area", "justifyMode": "auto" },
-      "title": "Temperatura — parcela_3",
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      },
+      "title": "Temperatura \u2014 parcela_3",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -138,24 +233,54 @@
       "datasource": "InfluxDB-Processed",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "blue", "value": null },
-              { "color": "green", "value": 18 },
-              { "color": "orange", "value": 35 },
-              { "color": "red", "value": 38 }
+              {
+                "color": "blue",
+                "value": null
+              },
+              {
+                "color": "green",
+                "value": 18
+              },
+              {
+                "color": "orange",
+                "value": 35
+              },
+              {
+                "color": "red",
+                "value": 38
+              }
             ]
           },
           "unit": "celsius",
           "mappings": []
         }
       },
-      "gridPos": { "h": 4, "w": 6, "x": 18, "y": 1 },
+      "gridPos": {
+        "h": 4,
+        "w": 6,
+        "x": 18,
+        "y": 1
+      },
       "id": 4,
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background", "graphMode": "area", "justifyMode": "auto" },
-      "title": "Temperatura — parcela_4",
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      },
+      "title": "Temperatura \u2014 parcela_4",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -169,24 +294,54 @@
       "datasource": "InfluxDB-Processed",
       "fieldConfig": {
         "defaults": {
-          "color": { "mode": "thresholds" },
+          "color": {
+            "mode": "thresholds"
+          },
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "orange", "value": 15 },
-              { "color": "green", "value": 24 },
-              { "color": "orange", "value": 40 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 15
+              },
+              {
+                "color": "green",
+                "value": 24
+              },
+              {
+                "color": "orange",
+                "value": 40
+              }
             ]
           },
           "unit": "percent",
           "mappings": []
         }
       },
-      "gridPos": { "h": 4, "w": 12, "x": 0, "y": 5 },
+      "gridPos": {
+        "h": 4,
+        "w": 12,
+        "x": 0,
+        "y": 5
+      },
       "id": 5,
-      "options": { "reduceOptions": { "calcs": ["lastNotNull"] }, "orientation": "auto", "textMode": "auto", "colorMode": "background", "graphMode": "area", "justifyMode": "auto" },
-      "title": "Humedad del Suelo Actual — parcela_1 y parcela_3",
+      "options": {
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
+        "orientation": "auto",
+        "textMode": "auto",
+        "colorMode": "background",
+        "graphMode": "area",
+        "justifyMode": "auto"
+      },
+      "title": "Humedad del Suelo Actual \u2014 parcela_1 y parcela_3",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -198,9 +353,14 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 9 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 9
+      },
       "id": 101,
-      "title": "Series de Tiempo — Temperatura y Humedad (últimas 6 horas)",
+      "title": "Series de Tiempo \u2014 Temperatura y Humedad (\u00faltimas 6 horas)",
       "type": "row"
     },
     {
@@ -208,13 +368,29 @@
       "fieldConfig": {
         "defaults": {
           "unit": "celsius",
-          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          }
         }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 10 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 10
+      },
       "id": 10,
-      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
-      "title": "Temperatura del Aire — 4 Parcelas",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "title": "Temperatura del Aire \u2014 4 Parcelas",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -229,13 +405,29 @@
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          }
         }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 10 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 10
+      },
       "id": 11,
-      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
-      "title": "Humedad Relativa — 4 Parcelas",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "title": "Humedad Relativa \u2014 4 Parcelas",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -250,13 +442,29 @@
       "fieldConfig": {
         "defaults": {
           "unit": "percent",
-          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          }
         }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 10 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 10
+      },
       "id": 12,
-      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
-      "title": "Humedad del Suelo — parcela_1 y parcela_3",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "title": "Humedad del Suelo \u2014 parcela_1 y parcela_3",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -268,9 +476,14 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 18 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 18
+      },
       "id": 102,
-      "title": "Series de Tiempo — Lluvia, pH y Radiación Solar",
+      "title": "Series de Tiempo \u2014 Lluvia, pH y Radiaci\u00f3n Solar",
       "type": "row"
     },
     {
@@ -278,13 +491,29 @@
       "fieldConfig": {
         "defaults": {
           "unit": "lengthmm",
-          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          }
         }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 19 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 19
+      },
       "id": 20,
-      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
-      "title": "Precipitación — 4 Parcelas",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "title": "Precipitaci\u00f3n \u2014 4 Parcelas",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -299,15 +528,31 @@
       "fieldConfig": {
         "defaults": {
           "unit": "none",
-          "custom": { "lineWidth": 2, "fillOpacity": 10 },
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          },
           "min": 4,
           "max": 9
         }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 19 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 19
+      },
       "id": 21,
-      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
-      "title": "pH del Suelo — parcela_1 y parcela_3",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "title": "pH del Suelo \u2014 parcela_1 y parcela_3",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -322,13 +567,29 @@
       "fieldConfig": {
         "defaults": {
           "unit": "wm2",
-          "custom": { "lineWidth": 2, "fillOpacity": 10 }
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 10
+          }
         }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 19 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 19
+      },
       "id": 22,
-      "options": { "tooltip": { "mode": "multi" }, "legend": { "displayMode": "list", "placement": "bottom" } },
-      "title": "Radiación Solar — parcela_1, parcela_2, parcela_3",
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "title": "Radiaci\u00f3n Solar \u2014 parcela_1, parcela_2, parcela_3",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -340,9 +601,14 @@
     },
     {
       "collapsed": false,
-      "gridPos": { "h": 1, "w": 24, "x": 0, "y": 27 },
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 27
+      },
       "id": 103,
-      "title": "Indicadores de Estrés y Calidad de Datos",
+      "title": "Indicadores de Estr\u00e9s y Calidad de Datos",
       "type": "row"
     },
     {
@@ -354,25 +620,50 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
             ]
           },
           "mappings": [
-            { "type": "value", "options": { "0": { "text": "Normal" }, "1": { "text": "ESTRÉS CALÓRICO" } } }
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Normal"
+                },
+                "1": {
+                  "text": "ESTR\u00c9S CAL\u00d3RICO"
+                }
+              }
+            }
           ]
         }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 0, "y": 28 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 0,
+        "y": 28
+      },
       "id": 30,
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
         "orientation": "horizontal",
         "displayMode": "gradient",
         "showUnfilled": true,
         "text": {}
       },
-      "title": "Índice de Estrés Calórico por Parcela",
+      "title": "\u00cdndice de Estr\u00e9s Cal\u00f3rico por Parcela",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -391,25 +682,50 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "green", "value": null },
-              { "color": "red", "value": 1 }
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 1
+              }
             ]
           },
           "mappings": [
-            { "type": "value", "options": { "0": { "text": "Normal" }, "1": { "text": "ESTRÉS HÍDRICO" } } }
+            {
+              "type": "value",
+              "options": {
+                "0": {
+                  "text": "Normal"
+                },
+                "1": {
+                  "text": "ESTR\u00c9S H\u00cdDRICO"
+                }
+              }
+            }
           ]
         }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 8, "y": 28 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 8,
+        "y": 28
+      },
       "id": 31,
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
         "orientation": "horizontal",
         "displayMode": "gradient",
         "showUnfilled": true,
         "text": {}
       },
-      "title": "Indicador de Estrés Hídrico por Parcela",
+      "title": "Indicador de Estr\u00e9s H\u00eddrico por Parcela",
       "targets": [
         {
           "datasource": "InfluxDB-Processed",
@@ -429,18 +745,39 @@
           "thresholds": {
             "mode": "absolute",
             "steps": [
-              { "color": "red", "value": null },
-              { "color": "orange", "value": 0.5 },
-              { "color": "yellow", "value": 0.75 },
-              { "color": "green", "value": 0.9 }
+              {
+                "color": "red",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 0.5
+              },
+              {
+                "color": "yellow",
+                "value": 0.75
+              },
+              {
+                "color": "green",
+                "value": 0.9
+              }
             ]
           }
         }
       },
-      "gridPos": { "h": 8, "w": 8, "x": 16, "y": 28 },
+      "gridPos": {
+        "h": 8,
+        "w": 8,
+        "x": 16,
+        "y": 28
+      },
       "id": 32,
       "options": {
-        "reduceOptions": { "calcs": ["lastNotNull"] },
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ]
+        },
         "orientation": "horizontal",
         "displayMode": "gradient",
         "showUnfilled": true,
@@ -455,15 +792,2738 @@
         }
       ],
       "type": "bargauge"
+    },
+    {
+      "id": 300,
+      "type": "row",
+      "title": "Fase 6 \u2014 Predicci\u00f3n de Variables Agroclim\u00e1ticas (pr\u00f3ximos ~5 min)",
+      "collapsed": false,
+      "gridPos": {
+        "h": 1,
+        "w": 24,
+        "x": 0,
+        "y": 36
+      }
+    },
+    {
+      "id": 301,
+      "type": "timeseries",
+      "title": "Temperatura del Aire \u2014 Real vs Predicho (4 Parcelas)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 37
+      },
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "celsius",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 8
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_1 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_2 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_3 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_4 predicho"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"temperature_air\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"temperature_air\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"temperature_air\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"temperature_air\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"temperature_air\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"temperature_air\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"temperature_air\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"temperature_air\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 pred\"}))"
+        }
+      ]
+    },
+    {
+      "id": 302,
+      "type": "timeseries",
+      "title": "Humedad Relativa \u2014 Real vs Predicho (4 Parcelas)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 37
+      },
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 8
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_1 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_2 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_3 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_4 predicho"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"humidity\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"humidity\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"humidity\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"humidity\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"humidity\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"humidity\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"humidity\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"humidity\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 pred\"}))"
+        }
+      ]
+    },
+    {
+      "id": 303,
+      "type": "timeseries",
+      "title": "Precipitaci\u00f3n \u2014 Real vs Predicho (4 Parcelas)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 46
+      },
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "lengthmm",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 8
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_1 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_2 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_3 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_4 predicho"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"rainfall\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"rainfall\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"rainfall\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"rainfall\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"rainfall\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"rainfall\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"rainfall\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"rainfall\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 pred\"}))"
+        }
+      ]
+    },
+    {
+      "id": 304,
+      "type": "timeseries",
+      "title": "pH del Suelo \u2014 Real vs Predicho (4 Parcelas)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 46
+      },
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "none",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 8
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_1 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_2 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_3 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_4 predicho"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"soil_ph\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"soil_ph\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"soil_ph\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"soil_ph\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"soil_ph\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"soil_ph\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"soil_ph\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"soil_ph\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 pred\"}))"
+        }
+      ]
+    },
+    {
+      "id": 305,
+      "type": "timeseries",
+      "title": "Humedad del Suelo \u2014 Real vs Predicho (4 Parcelas)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 55
+      },
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "percent",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 8
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_1 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_2 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_3 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_4 predicho"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"soil_moisture\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"soil_moisture\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"soil_moisture\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"soil_moisture\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"soil_moisture\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"soil_moisture\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"soil_moisture\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"soil_moisture\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 pred\"}))"
+        }
+      ]
+    },
+    {
+      "id": 306,
+      "type": "timeseries",
+      "title": "Radiaci\u00f3n Solar \u2014 Real vs Predicho (4 Parcelas)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 55
+      },
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "wm2",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 8
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_1 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_2 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_3 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_4 predicho"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"solar_radiation\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"solar_radiation\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"solar_radiation\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"solar_radiation\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"solar_radiation\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"solar_radiation\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"solar_radiation\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"solar_radiation\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 pred\"}))"
+        }
+      ]
+    },
+    {
+      "id": 307,
+      "type": "timeseries",
+      "title": "Velocidad del Viento \u2014 Real vs Predicho (4 Parcelas)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 0,
+        "y": 64
+      },
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "velocitykmh",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 8
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_1 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_2 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_3 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_4 predicho"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"wind_speed\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"wind_speed\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"wind_speed\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"wind_speed\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"wind_speed\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"wind_speed\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"wind_speed\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"wind_speed\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 pred\"}))"
+        }
+      ]
+    },
+    {
+      "id": 308,
+      "type": "timeseries",
+      "title": "Evapotranspiraci\u00f3n \u2014 Real vs Predicho (4 Parcelas)",
+      "gridPos": {
+        "h": 8,
+        "w": 12,
+        "x": 12,
+        "y": 64
+      },
+      "datasource": "InfluxDB-Processed",
+      "fieldConfig": {
+        "defaults": {
+          "unit": "lengthmm",
+          "custom": {
+            "lineWidth": 2,
+            "fillOpacity": 8
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_1 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#73BF69"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_1 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_2 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#F2CC0C"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_2 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_3 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#FF780A"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_3 predicho"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 real"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 2
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "solid"
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 8
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "parcela_4 pred"
+            },
+            "properties": [
+              {
+                "id": "color",
+                "value": {
+                  "mode": "fixed",
+                  "fixedColor": "#9966FF"
+                }
+              },
+              {
+                "id": "custom.lineWidth",
+                "value": 1
+              },
+              {
+                "id": "custom.lineStyle",
+                "value": {
+                  "fill": "dash",
+                  "dash": [
+                    8,
+                    4
+                  ]
+                }
+              },
+              {
+                "id": "custom.fillOpacity",
+                "value": 0
+              },
+              {
+                "id": "displayName",
+                "value": "parcela_4 predicho"
+              }
+            ]
+          }
+        ]
+      },
+      "options": {
+        "tooltip": {
+          "mode": "multi"
+        },
+        "legend": {
+          "displayMode": "list",
+          "placement": "bottom"
+        }
+      },
+      "targets": [
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"evapotranspiration\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A0P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_1\")\n  |> filter(fn: (r) => r.variable == \"evapotranspiration\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_1 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"evapotranspiration\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A1P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_2\")\n  |> filter(fn: (r) => r.variable == \"evapotranspiration\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_2 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"evapotranspiration\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A2P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_3\")\n  |> filter(fn: (r) => r.variable == \"evapotranspiration\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_3 pred\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3R",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"evapotranspiration\")\n  |> filter(fn: (r) => r.type == \"real\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 real\"}))"
+        },
+        {
+          "datasource": "InfluxDB-Processed",
+          "refId": "A3P",
+          "query": "from(bucket: \"agro_iot_ml\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r._measurement == \"sensor_forecast\")\n  |> filter(fn: (r) => r.parcela == \"parcela_4\")\n  |> filter(fn: (r) => r.variable == \"evapotranspiration\")\n  |> filter(fn: (r) => r.type == \"predicted\")\n  |> filter(fn: (r) => r._field == \"value\")\n  |> map(fn: (r) => ({r with _field: \"parcela_4 pred\"}))"
+        }
+      ]
     }
   ],
   "refresh": "30s",
   "schemaVersion": 38,
-  "tags": ["iot", "agricultura", "icesi"],
-  "time": { "from": "now-6h", "to": "now" },
+  "tags": [
+    "iot",
+    "agricultura",
+    "icesi"
+  ],
+  "time": {
+    "from": "now-6h",
+    "to": "now"
+  },
   "timepicker": {},
   "timezone": "browser",
-  "title": "Monitoreo Agroclimático IoT",
+  "title": "Monitoreo Agroclim\u00e1tico IoT",
   "uid": "agro-iot-dashboard-v1",
   "version": 1
 }
