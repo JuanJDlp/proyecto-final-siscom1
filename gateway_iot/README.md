@@ -38,10 +38,10 @@ El proyecto completo consta de 7 fases:
 | 3 | Gateway monolítico que escribe datos crudos en InfluxDB | `fase_3/` |
 | **4** | **Pipeline de procesamiento en tiempo real** | **`gateway_iot/`** |
 | **5** | **Verificación de umbrales y generación de alertas** | **`gateway_iot/`** |
-| 6 | Machine Learning predictivo | *(pendiente)* |
+| **6** | **Servicio ML de predicción (Ridge, 8 variables, ~5 min horizonte)** | **`fase_6/`** |
 | **7** | **Visualización con Grafana** | **`gateway_iot/`** |
 
-Este directorio (`gateway_iot/`) implementa las fases 4, 5 y 7 en un único proyecto Python contenerizado que **reemplaza** al gateway monolítico de la fase 3.
+Este directorio (`gateway_iot/`) implementa las fases 4, 5 y 7 en un único proyecto Python contenerizado que **reemplaza** al gateway monolítico de la fase 3. El `docker-compose.yml` incluye también el servicio `ml_service` de la Fase 6 (`fase_6/`).
 
 ---
 
@@ -64,6 +64,14 @@ Los datos se escriben en **tres buckets separados** en InfluxDB, diferenciando d
 - Clasifica cada violación como `warning` (exceso ≤ 20% del umbral) o `critical` (exceso > 20%).
 - Las alertas se escriben en InfluxDB como eventos con tags de parcela, cultivo, variable y severidad.
 - Grafana las consume y las pinta como anotaciones verticales en todos los paneles de tiempo.
+
+### Fase 6 — Predicción de variables agroclimáticas (Machine Learning)
+
+- Servicio contenerizado en `fase_6/ml_service.py`, incluido en el `docker-compose.yml` como `ml_service`.
+- Cada 30 s, para cada combinación parcela × variable (32 combinaciones en total), ajusta una **Regresión Ridge** sobre los últimos 20 valores reales y proyecta **3 pasos adelante (~5 minutos)**.
+- Features: índice lineal (tendencia), índice² (curvatura), media móvil de 3 puntos.
+- Resultados escritos en el bucket `agro_iot_ml` (measurement `sensor_forecast`, tag `type=real|predicted`).
+- Grafana muestra la sección **"Fase 6"** con **8 paneles** — línea real vs línea predicha por variable.
 
 ### Fase 7 — Visualización con Grafana
 
@@ -326,15 +334,16 @@ Definidos en `config/thresholds.py`. Fuente: análisis EDA fase 1 (secciones 7.1
 El `docker-compose.yml` levanta 5 servicios:
 
 ```
-┌─────────────┬──────────────────────────┬────────┬─────────────────────────────┐
-│ Servicio    │ Imagen                   │ Puerto │ Depende de                  │
-├─────────────┼──────────────────────────┼────────┼─────────────────────────────┤
-│ mosquitto   │ eclipse-mosquitto:latest │ 1883   │ —                           │
-│ simulator   │ build: ../fase_2         │ —      │ mosquitto (healthy)         │
-│ influxdb    │ influxdb:2.7             │ 8086   │ —                           │
+┌─────────────┬──────────────────────────┬────────┬──────────────────────────────┐
+│ Servicio    │ Imagen                   │ Puerto │ Depende de                   │
+├─────────────┼──────────────────────────┼────────┼──────────────────────────────┤
+│ mosquitto   │ eclipse-mosquitto:latest │ 1883   │ —                            │
+│ simulator   │ build: ../fase_2         │ —      │ mosquitto (healthy)          │
+│ influxdb    │ influxdb:2.7             │ 8086   │ —                            │
 │ gateway     │ build: .                 │ —      │ influxdb + mosquitto (healthy)│
-│ grafana     │ grafana/grafana:latest   │ 3000   │ influxdb (healthy)          │
-└─────────────┴──────────────────────────┴────────┴─────────────────────────────┘
+│ ml_service  │ build: ../fase_6         │ —      │ influxdb (healthy)           │
+│ grafana     │ grafana/grafana:latest   │ 3000   │ influxdb (healthy)           │
+└─────────────┴──────────────────────────┴────────┴──────────────────────────────┘
 ```
 
 Todos los servicios tienen `restart: unless-stopped`. InfluxDB y Mosquitto tienen healthchecks; el gateway y Grafana esperan a que estén listos antes de arrancar.

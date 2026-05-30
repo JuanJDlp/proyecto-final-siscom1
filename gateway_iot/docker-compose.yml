@@ -8,7 +8,7 @@ services:
     volumes:
       - mosquitto_data:/mosquitto/data
       - mosquitto_log:/mosquitto/log
-    restart: unless-stopped
+    restart: "no"
     healthcheck:
       test: ["CMD-SHELL", "mosquitto_sub -t '$$SYS/#' -C 1 -i healthcheck -W 3"]
       interval: 10s
@@ -30,7 +30,7 @@ services:
       - PALM_PATH=/app/datasets/crop-production-countries.csv
     volumes:
       - ../datasets:/app/datasets:ro,z
-    restart: unless-stopped
+    restart: "no"
 
   influxdb:
     image: influxdb:2.7
@@ -48,7 +48,7 @@ services:
     volumes:
       - influxdb_data:/var/lib/influxdb2
       - influxdb_config:/etc/influxdb2
-    restart: unless-stopped
+    restart: "no"
     healthcheck:
       test: ["CMD", "influx", "ping"]
       interval: 10s
@@ -75,7 +75,7 @@ services:
       - INFLUX_BUCKET_RAW=agro_iot_data
       - INFLUX_BUCKET_PROCESSED=agro_iot_processed
       - INFLUX_BUCKET_ALERTS=agro_iot_alerts
-    restart: unless-stopped
+    restart: "no"
 
   # ── Fase 6: Predicción de variables agroclimáticas ──────────────────────────
   ml_service:
@@ -95,7 +95,7 @@ services:
       - PREDICTION_INTERVAL=30
       - WINDOW_SIZE=20
       - STEPS_AHEAD=3
-    restart: unless-stopped
+    restart: "no"
 
   grafana:
     image: grafana/grafana:latest
@@ -113,7 +113,7 @@ services:
       - ./grafana/grafana.ini:/etc/grafana/grafana.ini:z
       - ./grafana/provisioning:/etc/grafana/provisioning:z
       - grafana_data:/var/lib/grafana
-    restart: unless-stopped
+    restart: "no"
 
 volumes:
   mosquitto_data:

@@ -21,10 +21,11 @@ docker compose up --build
 | **Grafana — dashboard** | http://localhost:3000 | admin / agro_grafana_2026 |
 | **InfluxDB** | http://localhost:8086 | admin / agro_admin_2026 |
 | MQTT Broker | localhost:1883 | sin autenticación |
+| ml_service | — (logs: `docker compose logs -f ml_service`) | — |
 
 El dashboard **"Monitoreo Agroclimático IoT — Sistema Integral"** aparece automáticamente en la carpeta **IoT Agricola** sin configuración adicional.
 
-> Para la guía paso-a-paso de ejecución y captura de evidencias por fase, ver **[`GUIA_PRESENTACION.md`](./GUIA_PRESENTACION.md)**.
+> Para la guía paso-a-paso de ejecución y verificación de evidencias por fase (alineada con la rúbrica), ver **[`GUIA_EVALUACION.md`](./GUIA_EVALUACION.md)**.
 
 ---
 
@@ -117,7 +118,26 @@ Las constantes por cultivo (Tbase, Kc, Topt) están en `config/thresholds.py`. L
 - **Reglas pre-provisionadas:** 10 reglas en 4 grupos (estrés calórico, hídrico, temp. extrema, HR baja palma/caña, viento palma, VPD, riesgo enfermedad, riego, calidad de datos).
 - **Generador de eventos de prueba:** `gateway_iot/alert_creator.py` publica payloads extremos por MQTT para validar cada regla (escenarios heat / water / wind / humidity / vpd / disease / irrigation / quality).
 
-### Fase 6 — Machine Learning *(implementada por un compañero)*
+### Fase 6 — Machine Learning predictivo (predicción de variables agroclimáticas)
+
+`fase_6/ml_service.py` — servicio Python contenerizado que predice los valores futuros de las **8 variables agroclimáticas** monitoreadas por los sensores, para cada una de las 4 parcelas.
+
+**Modelo:** Regresión Ridge sobre ventana deslizante de los últimos 20 valores reales.
+
+| Configuración | Valor |
+|---|---|
+| Features | índice lineal (tendencia), índice² (curvatura), media móvil 3 puntos |
+| Regularización | Ridge α=1.0 (L2, evita sobreajuste con ventanas cortas) |
+| Horizonte | 3 pasos adelante ≈ ~5 minutos |
+| Clamping | ±3σ del histórico (evita predicciones absurdas por ruido extremo) |
+| Ciclo | cada 30 s — 32 predicciones por ciclo (4 parcelas × 8 variables) |
+
+**¿Por qué Ridge y no ARIMA/LSTM?** ARIMA requiere estacionariedad y parámetros (p,d,q) inestables con ventanas cortas; LSTM necesita miles de puntos. Ridge funciona bien con 20 puntos, es robusto al ruido y predice en microsegundos.
+
+**Integración:** el servicio escribe en el bucket `agro_iot_ml` (measurement `sensor_forecast`) con tags `parcela`, `variable` y `type=[real|predicted]`. Grafana muestra una sección **"Fase 6"** con **8 paneles** comparando la línea real (sensor) contra la predicha (proyección):
+- Líneas juntas → el modelo captura bien la dinámica actual.
+- Línea predicha diverge → la variable tiene una tendencia clara en los próximos minutos.
+- Línea predicha constante con real variable → posible anomalía del sensor.
 
 ### Fase 7 — Visualización y dashboard integrado
 
@@ -181,14 +201,20 @@ proyecto_final/
 │   ├── crop-production-countries.csv      → Palma (Fase 2 — T y lluvia reales)
 │   └── sugarcane-dataset-2.csv            → Validación cruzada (Fase 1)
 │
-├── fase_1/                          # EDA — ya revisado por el profesor
+├── fase_1/                          # EDA — análisis exploratorio del dataset
 ├── fase_2/
 │   └── simulator.py                 # Simulador (se ejecuta dentro de gateway_iot)
 ├── fase_3/                          # Gateway monolítico inicial (referencia histórica)
 │
-├── gateway_iot/                     # ★ PROYECTO QUE SE PRESENTA ★
+├── fase_6/                          # Fase 6 — Servicio de predicción ML
+│   ├── ml_service.py                # Regresión Ridge, predicción de 8 variables
+│   ├── Dockerfile
+│   ├── requirements.txt
+│   └── README_fase6.md
+│
+├── gateway_iot/                     # ★ STACK PRINCIPAL — se ejecuta aquí ★
 │   ├── main.py                      # Entry point
-│   ├── docker-compose.yml           # Stack completo: 5 servicios
+│   ├── docker-compose.yml           # Stack completo: 6 servicios
 │   ├── config/
 │   │   ├── settings.py
 │   │   └── thresholds.py            # Umbrales + constantes Tbase/Kc/Topt por cultivo
@@ -207,13 +233,13 @@ proyecto_final/
 │   │   ├── grafana.ini
 │   │   └── provisioning/
 │   │       ├── datasources/influxdb.yaml
-│   │       ├── dashboards/agro_dashboard.json     # 27 paneles
+│   │       ├── dashboards/agro_dashboard.json     # 27 paneles + sección Fase 6
 │   │       └── alerting/                          # 10 reglas + contact points
 │   ├── alert_creator.py             # Generador de eventos extremos para probar alertas
 │   └── README.md                    # Documentación técnica detallada del gateway
 │
 ├── README.md                        # Este archivo
-├── GUIA_PRESENTACION.md             # Guía paso-a-paso ejecución y capturas
+├── GUIA_EVALUACION.md               # Guía de evaluación alineada con la rúbrica
 └── trabajo-final.pdf                # Enunciado del trabajo
 ```
 
@@ -230,11 +256,11 @@ proyecto_final/
 
 ---
 
-## Próximos pasos para la presentación
+## Guía de evaluación
 
-Ver **[`GUIA_PRESENTACION.md`](./GUIA_PRESENTACION.md)** para:
+Ver **[`GUIA_EVALUACION.md`](./GUIA_EVALUACION.md)** para:
 - Pre-requisitos del entorno
 - Secuencia de comandos para arrancar
-- Qué capturar en cada fase
-- Cómo disparar las alertas para mostrarlas funcionando
-- Tips y respuestas a las dudas más probables del profesor
+- Qué verificar en cada fase (alineado con la rúbrica)
+- Cómo disparar alertas para demostrar la Fase 5 en vivo
+- Comandos de limpieza post-evaluación
